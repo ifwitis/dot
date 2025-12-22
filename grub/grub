@@ -1,7 +1,7 @@
 # GRUB boot loader configuration
 
 GRUB_DEFAULT="saved"
-GRUB_TIMEOUT=7
+GRUB_TIMEOUT=14
 GRUB_DISTRIBUTOR="Arch"
 GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 cryptdevice=/dev/nvme1n1p3:volgroup0"
 GRUB_CMDLINE_LINUX=""
@@ -62,4 +62,4 @@ GRUB_SAVEDEFAULT=true
 
 # SET GRUB THEME HERE
 GRUB_TIMEOUT_STYLE=menu
-GRUB_THEME=/boot/grub/themes/minegrub-world-selection/theme.txt
+GRUB_THEME=/boot/grub/themes/teto/theme.txt
