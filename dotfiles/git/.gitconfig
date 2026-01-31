@@ -1,0 +1,7 @@
+[core]
+	editor = nvim
+[user]
+	name = Ivan
+	email = 129618028+ifwitis@users.noreply.github.com
+[alias]
+	lg = log -n 10 --oneline --graph --decorate
