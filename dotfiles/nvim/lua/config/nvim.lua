@@ -1,11 +1,10 @@
 -- Keybinding
-vim.keymap.set('n', '<C-n>', ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
 vim.keymap.set('t', '<C-t>', '<C-\\><C-n><C-w><C-p>', { noremap = true, silent = true })
 --vim.keymap.set('n', '<C-w>t', toggle_terminal{ noremap = true, silent = true })
 vim.keymap.set('n', '<C-w>e', ":enew<CR>", { noremap = true, silent = true })
 vim.keymap.set({'n','v','i'}, '<C-q>', '<Esc>:qa!<CR>', { noremap = true, silent = true})
-vim.keymap.set('t', '<C-q>', '<C-\\><C-n>:qa!<CR>', { noremap = true, silent = true})
+vim.keymap.set('t', '<C-q>', '<C-\\><C-n>:q<CR>', { noremap = true, silent = true})
 
 -- Set Indentation defaults
 vim.opt.tabstop = 4
