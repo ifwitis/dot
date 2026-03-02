@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+MAX_SIZE=$((5*1024*1024))
+
+git diff --cached --name-only --diff-filter=ACMRU | grep '\.pdf$' | while IFS= read -r f; do
+  size=$(wc -c <"$f")
+  if [ "$size" -gt "$MAX_SIZE" ]; then
+    echo "PDF '$f' (size: $((size/1024/1024))MB) is larger than 5MB — ensuring it's tracked by LFS."
+    git lfs track "$f"
+    git add .gitattributes "$f"
+  fi
+done
+
