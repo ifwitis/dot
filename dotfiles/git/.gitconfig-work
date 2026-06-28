@@ -1,0 +1,5 @@
+[user]
+    name = Ivan Wu
+    email = 250812799+ixw-code@users.noreply.github.com
+[core]
+    sshCommand = "ssh -i ~/.ssh/id_ed25519_work -F /dev/null"

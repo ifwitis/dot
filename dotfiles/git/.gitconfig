@@ -1,7 +1,30 @@
+[init]
+    defaultbranch = main
 [core]
-	editor = nvim
-[user]
-	name = Ivan
-	email = 129618028+ifwitis@users.noreply.github.com
+    editor = nvim
+[filter "lfs"]
+        clean = git-lfs clean -- %f
+        smudge = git-lfs smudge -- %f
+        process = git-lfs filter-process
+        required = true
+[pager]
+        diff = false
+        branch = false
+        tag = false
+        log = false
 [alias]
-	lg = log -n 10 --oneline --graph --decorate
+        lg = log -n 10 --oneline --graph --decorate
+        lgp = log -n 20 --graph --decorate | less
+        ll = log --graph --oneline --decorate --color --all
+[pull]
+        rebase = false
+
+# Personal Config
+[includeIf "gitdir:~/Documents/"]
+    path = ~/.gitconfig-personal
+[includeIf "gitdir:~/Projects/"]
+    path = ~/.gitconfig-personal
+
+# Work Config
+[includeIf "gitdir:~/Documents/School/"]
+    path = ~/.gitconfig-work
