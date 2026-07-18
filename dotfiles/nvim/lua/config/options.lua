@@ -14,7 +14,6 @@ g.mapleader = " "
 g.localleader = " "
 g.background = "light"
 
-
 -----------------------------------------------------------
 -- General
 -----------------------------------------------------------
@@ -28,7 +27,8 @@ o.completeopt = 'menuone,noinsert,noselect'  -- Autocomplete options
 -----------------------------------------------------------
 -- Neovim UI
 -----------------------------------------------------------
-o.number = true           -- Show line number
+o.number = true           -- Show line numbers
+o.relativenumber = true   -- Show relative line numbers
 o.showmatch = true        -- Highlight matching parenthesis
 o.foldmethod = 'marker'   -- Enable folding (default 'foldmarker')
 o.splitright = true       -- Vertical split to the right

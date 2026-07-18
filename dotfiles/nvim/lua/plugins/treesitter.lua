@@ -4,8 +4,8 @@ return {
         dependencies = {
             'neovim-treesitter/treesitter-parser-registry',
         },
-        -- branch = "master",
+        lazy = false,
         build = ":TSUpdate",
-        opts = {},
+        event = { "BufReadPost", "BufNewFile" },
     }
 }

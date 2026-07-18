@@ -13,12 +13,12 @@ local autocmd = vim.api.nvim_create_autocmd   -- Create autocommand
 -- General settings
 -----------------------------------------------------------
 
--- Highlights yanked text
+-- Highlights text when yanked 
 autocmd("TextYankPost", {
     callback = function()
         vim.highlight.on_yank({
             higroup = "IncSearch",
-            timeout = 40,
+            timeout = 200,
         })
     end,
 })
@@ -74,3 +74,8 @@ vim.api.nvim_create_autocmd('FileType', {
     end
   end,
 })
+
+
+-----------------------------------------------------------
+-- Nvim Tree
+-----------------------------------------------------------
