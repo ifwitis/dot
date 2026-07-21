@@ -35,6 +35,10 @@ return {
                         up = false,
                         down = false
                     }
+                },
+                mappings = {
+                    MkdnTab = { 'i', '<Tab>' },
+                    MkdnSTab = { 'i', '<S-Tab>' },
                 }
             })
         end

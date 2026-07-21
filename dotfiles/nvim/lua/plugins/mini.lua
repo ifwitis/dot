@@ -28,5 +28,5 @@ return {
     { "nvim-mini/mini.pairs", version = "*", opts = {} },
     { "nvim-mini/mini.indentscope", version = "*", opts = {} },
     -- { "nvim-mini/mini.trailspace", version = "*", opts = {} },
-    { "nvim-mini/mini.notify", version = "*", opts = {} },
+    -- { "nvim-mini/mini.notify", version = "*", opts = {} },
 }

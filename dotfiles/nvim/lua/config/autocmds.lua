@@ -55,10 +55,22 @@ autocmd({ "InsertEnter", "WinLeave" }, {
 
 
 -----------------------------------------------------------
+-- LSP 
+-----------------------------------------------------------
+
+local lsp_on_attach_group = augroup("LspMappings", {})
+local on_attach = require("utils.lsp-keybinds").on_attach
+autocmd("LspAttach", {
+    group = lsp_on_attach_group,
+    callback = on_attach,
+})
+
+
+-----------------------------------------------------------
 -- Neovim Treesitter
 -----------------------------------------------------------
 
-vim.api.nvim_create_autocmd('FileType', {
+autocmd('FileType', {
   callback = function(ev)
     local lang = vim.treesitter.language.get_lang(ev.match)
     local available_langs = require('nvim-treesitter').get_available()
@@ -77,5 +89,20 @@ vim.api.nvim_create_autocmd('FileType', {
 
 
 -----------------------------------------------------------
--- Nvim Tree
+-- Colorscheme
 -----------------------------------------------------------
+
+autocmd("ColorScheme", {
+    pattern = "*",
+    callback = function()
+        if vim.o.background == "light" then
+            -- Dark cursor for high visibility on light backgrounds
+            vim.api.nvim_set_hl(0, "Cursor", { fg = "#FFFFFF", bg = "#005FDB" })
+            vim.api.nvim_set_hl(0, "lCursor", { fg = "#FFFFFF", bg = "#000000" })
+        else
+            -- Light cursor for high visibility on dark backgrounds
+            vim.api.nvim_set_hl(0, "Cursor", { reverse = true, })
+            vim.api.nvim_set_hl(0, "lCursor", { reverse = true, })
+        end
+    end,
+})

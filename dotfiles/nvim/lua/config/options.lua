@@ -6,13 +6,7 @@
 -- See: https://neovim.io/doc/user/vim_diff.html
 -- [2] Defaults - *nvim-defaults*
 
-local g = vim.g       -- Global variables
 local o = vim.o       -- Set options
-local opt = vim.opt   -- Set options (lua list/map-like)
-
-g.mapleader = " "
-g.localleader = " "
-g.background = "light"
 
 -----------------------------------------------------------
 -- General
@@ -36,9 +30,11 @@ o.splitbelow = true       -- Horizontal split to the bottom
 o.ignorecase = true       -- Ignore case letters when search
 o.smartcase = true        -- Ignore lowercase for the whole pattern
 o.linebreak = true        -- Wrap on word boundary
-o.termguicolors = true    -- Enable 24-bit RGB colors
 o.laststatus = 3          -- Set global statusline
-o.inccommand = nosplit    -- Set Ex command previews
+o.inccommand = "nosplit"    -- Set Ex command previews
+o.termguicolors = true    -- Enable 24-bit RGB colors
+
+o.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-lCursor,r-cr:hor20,o:hor50"     -- Map GUI Cursor to reflect light/dark mode settings
 
 -----------------------------------------------------------
 -- Tabs, indent
