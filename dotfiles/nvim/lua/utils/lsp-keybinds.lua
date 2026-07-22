@@ -13,7 +13,7 @@ M.on_attach = function(event)
     local bufnr = event.buf
     local def_opts = {
         noremap = true, -- prevent recursive mapping
-        silent = true,  -- don't print the command to the cli
+        silent = true, -- don't print the command to the cli
         buffer = bufnr, -- restrict the keymap to the local buffer number
     }
     local function map(mode, lhs, rhs, desc)
@@ -22,22 +22,32 @@ M.on_attach = function(event)
     end
 
     -- Navigation
-    map("n", "gd", vim.lsp.buf.definition, "LSP: Go to definition")
-    map("n", "gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
-    map("n", "gi", vim.lsp.buf.implementation, "LSP: Go to implementation")
+    map("n", "gd", "<cmd>Lspsaga peek_definition<CR>", "LSP: Peek definition")
+    map("n", "gD", "<cmd>vsplit | Lspsaga go_to_definition<CR>", "LSP: Go to definition in split window")
+    map("n", "gi", vim.lsp.buf.declaration, "LSP: Go to implementation")
     map("n", "go", vim.lsp.buf.type_definition, "LSP: Go to type definition")
     map("n", "gR", vim.lsp.buf.references, "LSP: Go to references")
     map("n", "gs", vim.lsp.buf.signature_help, "LSP: Signature help")
 
     -- Docs / info
-    map("n", "<leader>dd", vim.lsp.buf.hover, "LSP: Hover docs")
+    map("n", "<leader>D", "<cmd>Lspsaga hover_doc<CR>", "LSP: Hover docs")
 
-    -- Refactor
-    map("n", "<leader>rn", vim.lsp.buf.rename, "LSP: Rename symbol")
+    -- Rename
+    map("n", "<leader>rn", "<cmd>Lspsaga rename<CR>", "LSP: Rename symbol")
+
+    -- Diagnostics
+    map("n", "<leader>ca", "<cmd>Lspsaga code_action<CR>", "LSP: Code actions")
+
+    map("n", "<leader>dd", "<cmd>Lspsaga show_line_diagnostics<CR>", "LSP: Show line diagnostics")
+    map("n", "<leader>de", "<cmd>Lspsaga show_cursor_diagnostics<CR>", "LSP: Show cursor diagnostics")
+    map("n", "<leader>dp", "<cmd>Lspsaga diagnostic_jump_prev<CR>", "LSP: Prev diagnostic")
+    map("n", "<leader>dn", "<cmd>Lspsaga diagnostic_jump_next<CR>", "LSP: Next diagnostic")
+
+    map("n", "<leader>dl", vim.diagnostic.setloclist, "LSP: Diagnostics to loclist")
 
     -- Order Imports (if supported by the client LSP)
     if client:supports_method("textDocument/codeAction", bufnr) then
-        map("n", "<leader>ca", function()
+        map("n", "<leader>oi", function()
             vim.lsp.buf.code_action({
                 context = {
                     only = { "source.organizeImports" },
@@ -50,18 +60,8 @@ M.on_attach = function(event)
             vim.defer_fn(function()
                 vim.lsp.buf.format({ bufnr = bufnr })
             end, 50) -- slight delay to allow for the import order to go first
-        end, "LSP: Code action")
+        end, "LSP: Organize imports")
     end
-
-    -- Diagnostics
-    map("n", "<leader>de", vim.diagnostic.open_float, "LSP: Show line diagnostics")
-    map("n", "<leader>dp", function()
-        vim.diagnostic.jump({ count = -1, float = true })
-    end, "LSP: Previous diagnostic")
-    map("n", "<leader>dn", function()
-        vim.diagnostic.jump({ count = 1, float = true })
-    end, "LSP: Next diagnostic")
-    map("n", "<leader>dl", vim.diagnostic.setloclist, "LSP: Diagnostics to loclist")
 
     -- Formatting (guard: only map if the client actually supports it,
     -- so e.g. ruff and basedpyright don't both fight over the buffer)

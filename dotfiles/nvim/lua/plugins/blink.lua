@@ -33,7 +33,7 @@ return {
             ["<D-e>"] = { "show", "hide", 'show_documentation', 'hide_documentation'  },
 
             -- Enter to accept
-            ["<CR>"] = { "accept", "fallback" },
+            ["<CR>"] = { "select_and_accept", "fallback" },
 
             -- Tab to accept 
             ["<Tab>"] = {

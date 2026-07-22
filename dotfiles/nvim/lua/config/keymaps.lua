@@ -253,15 +253,18 @@ map('n', '<leader>th', '<cmd>Themery<CR>', { desc = "Choose a theme" })
 -- Fine Cmdline
 -- ======================================================================
 
-
 map('n', ':', function()
-    local success, _ = pcall(function()
-        require('fine-cmdline').open()
-    end)
     -- Check if the current buffer is locked or a help file
-    if not success or vim.bo.modifiable == false or vim.bo.buftype == 'help' then
+    if vim.bo.modifiable == false or vim.bo.buftype == 'help' then
         -- Fallback immediately to the native, un-breakable cmdline
         vim.api.nvim_feedkeys(':', 'n', true)
+    else
+        local success, _ = pcall(function()
+            require('fine-cmdline').open()
+        end)
+        if not success then
+            vim.api.nvim_feedkeys(':', 'n', true)
+        end
     end
 end, { desc = "Safe Fine Cmdline Switch" })
 

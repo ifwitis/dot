@@ -49,7 +49,7 @@ o.smartindent = true      -- Autoindent new lines
 -----------------------------------------------------------
 o.hidden = true           -- Enable background buffers
 o.history = 100           -- Remember N lines in history
-o.lazyredraw = true       -- Faster scrolling
+o.lazyredraw = false      -- Faster scrolling
 o.synmaxcol = 240         -- Max column for syntax highlight
 o.updatetime = 250        -- ms to wait for trigger an event
 
