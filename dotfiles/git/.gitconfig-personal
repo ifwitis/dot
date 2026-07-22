@@ -1,6 +1,7 @@
 [user]
 	name = Ivan
 	email = 129618028+ifwitis@users.noreply.github.com
+    signingkey = 12E066BB7F2C33A2
 [core]
     sshCommand = "ssh -i ~/.ssh/id_personal -F /dev/null" 
 

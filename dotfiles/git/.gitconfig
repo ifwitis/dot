@@ -3,21 +3,25 @@
 [core]
     editor = nvim
 [filter "lfs"]
-        clean = git-lfs clean -- %f
-        smudge = git-lfs smudge -- %f
-        process = git-lfs filter-process
-        required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
 [pager]
-        diff = false
-        branch = false
-        tag = false
-        log = false
+    diff = false
+    branch = false
+    tag = false
+    log = false
 [alias]
-        lg = log -n 10 --oneline --graph --decorate
-        lgp = log -n 20 --graph --decorate | less
-        ll = log --graph --oneline --decorate --color --all
+    lg = log -n 10 --oneline --graph --decorate
+    lgp = log -n 20 --graph --decorate | less
+    ll = log --graph --oneline --decorate --color --all
 [pull]
-        rebase = false
+    rebase = false
+[commit]
+	gpgsign = true
+[tag]
+	gpgSign = true
 
 # Personal Config
 [includeIf "gitdir:~/Documents/"]

@@ -1,5 +1,6 @@
 [user]
     name = Ivan Wu
     email = 250812799+ixw-code@users.noreply.github.com
+    signingkey = D9F9E03FB7CABC3D
 [core]
     sshCommand = "ssh -i ~/.ssh/id_work -F /dev/null"
