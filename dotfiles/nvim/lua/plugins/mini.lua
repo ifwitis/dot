@@ -27,9 +27,9 @@ return {
     { "nvim-mini/mini.surround", version = "*", opts = {} },
     { "nvim-mini/mini.pairs", version = "*", opts =
         { mappings = {
-            ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\][%s,;%)%]%}' },
-            ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\][%s,;%)%]%}' },
-            ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\][%s,;%}%]%}' },
+            ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\][%s,;%)%]%}]' },
+            ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\][%s,;%)%]%}]' },
+            ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\][%s,;%}%]%}]' },
 
             [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
             [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },
