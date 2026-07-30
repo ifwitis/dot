@@ -196,9 +196,10 @@ map("i", "<C-y>", "<C-o><C-r>", { desc = "Redo" })      -- CTRL + Y
 ------------------------------------------------------
 --------------- Commenting Shortcuts -----------------
 ------------------------------------------------------
+-- <C-_>  = TMUX binding for Ctrl + /
 -- <C-/>  = Modern terminal/GUI translation for Ctrl + /
 -- <D-/>  = GUI translation for Command + / (If using Neovide/Mac keys)
-local comment_keys = { '<C-/>', '<D-/>' }
+local comment_keys = { '<C-_>', '<C-/>', '<D-/>' }
 for _, key in ipairs(comment_keys) do
     -- NORMAL MODE: Toggle current line comment, preserving cursor position
     map('n', key, function()
