@@ -1,0 +1,30 @@
+name: Hybrid Config
+version: 0.0.1
+models:
+  # --- OLLAMA CLOUD MODELS ---
+  - name: MiniMax M3
+    provider: ollama
+    model: minimax-m3:cloud
+  
+  # - name: Kimi K3
+  #   provider: ollama
+  #   model: kimi-k3:cloud
+
+  # - name: GLM 5.2
+  #   provider: ollama
+  #   model: glm-5.2:cloud
+    
+  # --- LOCAL OLLAMA MODELS ---
+  # Used for heavy chat/refactoring tasks
+  - name: Qwen 2.5 Coder
+    provider: ollama
+    model: qwen2.5-coder:latest
+    apiBase: http://localhost:11434
+    roles:
+      - autocomplete
+      
+contextProviders:
+  - name: "codebase"   # Lets the model search your entire repository
+  - name: "folder"     # Restricts tool scope to a specific folder
+  - name: "terminal"   # Feeds recent terminal output to the model
+  - name: "problems"   # Passes VS Code error warnings to the model 
