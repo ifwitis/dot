@@ -2,12 +2,28 @@
 # https://ghostty.org/docs/config
 
 keybind = global:alt+shift+t=toggle_quick_terminal
+
+# Send escape sequences for Option as Meta
+macos-option-as-alt = true
+keybind = alt+left=text:\x1b[1;3D
+keybind = alt+right=text:\x1b[1;3C
+keybind = alt+up=text:\x1b[1;3A
+keybind = alt+down=text:\x1b[1;3B
+# Send Cmd+/ escape sequence as Ctrl+/, might change
+keybind = cmd+/=text:\x1f
+
+quick-terminal-size = 10%
+quick-terminal-autohide = true
+
 font-family = "LiterationMono Nerd Font Mono" 
 
 # background = #000000
 # foreground = #dadada
-background-opacity = 0.9
+background-opacity = 0.85
+bell-features = "no-title"
 macos-titlebar-style = "transparent"
+macos-titlebar-proxy-icon = "hidden"
+title = " "
 
 cursor-color = #dadada
 selection-background = #454545
