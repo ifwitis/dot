@@ -169,14 +169,9 @@ map("c", "<M-BS>", "<C-w>", { desc = "Delete word backward" }) -- Backspace
 -- map('i', '<M-Right>', '<C-o>w', { desc = 'Shift right one word' })   -- Option/Alt + Right
 
 -- Smart Indent (Matches indent in empty line)
--- map("i", "<Tab>", function()
---     local line = vim.api.nvim_get_current_line()
---     if line:match("^%s*$") then
---         return "<C-f>"
---     else
---         return "<Tab>"
---     end
--- end, { expr = true, desc = "Smart indent" })
+map("i", "<Tab>", function()
+    return (vim.fn.getline('.') == '' and vim.fn.line('.') ~= 1) and '<M-BS><CR>' or '<Tab>'
+end, { expr = true, desc = "Smart indent" })
 
 -- Delete word
 map("i", "<M-BS>", "<C-w>", { desc = "Delete word backward" })     -- Option/Alt + Backspace
@@ -275,99 +270,99 @@ end, { desc = "Safe Fine Cmdline Switch" })
 --
 -- Helper function to check if the cursor is before the first actual text word
 -- local function cursor_is_before_text()
---     local line = vim.api.nvim_get_current_line()
---     local col = vim.api.nvim_win_get_cursor(0)[2] -- 0-indexed column
---
---     -- Find the index of the first character that is NOT a space, tab, -, *, +, or digit/dot
---     local text_start = line:find("[^%s%-%*%+%.%d]")
---     vim.print(text_start)
---     if not text_start then
---         -- If the line only contains spaces or list markers, allow tabbing anywhere
---         return true
---     end
---
---     -- Lua string indices are 1-based, Neovim cursor column is 0-based
---     return col < (text_start - 1)
--- end
+    --     local line = vim.api.nvim_get_current_line()
+    --     local col = vim.api.nvim_win_get_cursor(0)[2] -- 0-indexed column
+    --
+    --     -- Find the index of the first character that is NOT a space, tab, -, *, +, or digit/dot
+    --     local text_start = line:find("[^%s%-%*%+%.%d]")
+    --     vim.print(text_start)
+    --     if not text_start then
+    --         -- If the line only contains spaces or list markers, allow tabbing anywhere
+    --         return true
+    --     end
+    --
+    --     -- Lua string indices are 1-based, Neovim cursor column is 0-based
+    --     return col < (text_start - 1)
+    -- end
 
--- ENTER/<CR>: Go to the navigation link in a Markdown file
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "markdown", "rmd" },
-    callback = function()
-        map('n', '<CR>', '<Cmd>MkdnEnter<CR>', {
-            buffer = true,
-            desc = 'Mkdn enter'
-        })
-    end,
-})
+    -- ENTER/<CR>: Go to the navigation link in a Markdown file
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "markdown", "rmd" },
+        callback = function()
+            map('n', '<CR>', '<Cmd>MkdnEnter<CR>', {
+                buffer = true,
+                desc = 'Mkdn enter'
+            })
+        end,
+    })
 
--- ENTER: Create a new list item
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "markdown", "rmd" },
-    callback = function()
-        map('i', '<CR>', '<cmd>MkdnNewListItem<CR>', {
-            buffer = true,
-            desc = "Auto-continue markdown list items"
-        })
-    end
-})
+    -- ENTER: Create a new list item
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "markdown", "rmd" },
+        callback = function()
+            map('i', '<CR>', '<cmd>MkdnNewListItem<CR>', {
+                buffer = true,
+                desc = "Auto-continue markdown list items"
+            })
+        end
+    })
 
--- TAB/SHIFT+TAB: Smart list indenting
--- vim.api.nvim_create_autocmd("FileType", {
---     pattern = { "markdown", "rmd" },
---     callback = function()
---         map('i', '<Tab>', function()
---             if cursor_is_before_text() then
---                 vim.cmd("MkdnIndentListItem")
---             else
---                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "n", true)
---             end
---         end, { desc = "Smart shift right"})
---
---
---         map('i', '<S-Tab>', function()
---             if cursor_is_before_text() then
---                 vim.cmd("MkdnDedentListItem")
---             else
---                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<S-Tab>", true, true, true), "n", true)
---             end
---         end, { desc = "Smart shift left"})
---     end
--- })
-
-
--- ======================================================================
--- Blink.cmp 
--- ======================================================================
-
--- Find blink keymaps in ../plugins/blink.cmp
--- <Leader>e for showing autocomplete/documentation
-
--- ======================================================================
--- Telescope 
--- ======================================================================
-
--- Defaults
-map('n', '<leader><leader><leader>', function() require('telescope.builtin').find_files() end, { desc = 'Telescope find files' })
-map('n', '<leader>fg', function() require('telescope.builtin').live_grep() end, { desc = 'Telescope live grep' })
+    -- TAB/SHIFT+TAB: Smart list indenting
+    -- vim.api.nvim_create_autocmd("FileType", {
+        --     pattern = { "markdown", "rmd" },
+        --     callback = function()
+            --         map('i', '<Tab>', function()
+                --             if cursor_is_before_text() then
+                --                 vim.cmd("MkdnIndentListItem")
+                --             else
+                --                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "n", true)
+                --             end
+                --         end, { desc = "Smart shift right"})
+                --
+                --
+                --         map('i', '<S-Tab>', function()
+                    --             if cursor_is_before_text() then
+                    --                 vim.cmd("MkdnDedentListItem")
+                    --             else
+                    --                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<S-Tab>", true, true, true), "n", true)
+                    --             end
+                    --         end, { desc = "Smart shift left"})
+                    --     end
+                    -- })
 
 
--- ======================================================================
--- Nvim Tree 
--- ======================================================================
+                    -- ======================================================================
+                    -- Blink.cmp 
+                    -- ======================================================================
 
--- Defaults
-map('n', '<leader>tr', "<cmd>NvimTreeToggle<CR>", { desc = "Toggle File tree" })
-map('n', '<leader>rt', "<cmd>NvimTreeFocus<CR>", { desc = "Toggle File tree focus" })
+                    -- Find blink keymaps in ../plugins/blink.cmp
+                    -- <Leader>e for showing autocomplete/documentation
 
--- ======================================================================
--- Mason 
--- ======================================================================
+                    -- ======================================================================
+                    -- Telescope 
+                    -- ======================================================================
 
--- Defaults
-map('n', '<leader>m', "<cmd>Mason<CR>", { desc = "Open Mason LSP Manager" })
+                    -- Defaults
+                    map('n', '<leader><leader><leader>', function() require('telescope.builtin').find_files() end, { desc = 'Telescope find files' })
+                    map('n', '<leader>fg', function() require('telescope.builtin').live_grep() end, { desc = 'Telescope live grep' })
 
 
--- ======================================================================
--- Multicursor 
--- =======================================================================y=
+                    -- ======================================================================
+                    -- Nvim Tree 
+                    -- ======================================================================
+
+                    -- Defaults
+                    map('n', '<leader>tr', "<cmd>NvimTreeToggle<CR>", { desc = "Toggle File tree" })
+                    map('n', '<leader>rt', "<cmd>NvimTreeFocus<CR>", { desc = "Toggle File tree focus" })
+
+                    -- ======================================================================
+                    -- Mason 
+                    -- ======================================================================
+
+                    -- Defaults
+                    map('n', '<leader>m', "<cmd>Mason<CR>", { desc = "Open Mason LSP Manager" })
+
+
+                    -- ======================================================================
+                    -- Multicursor 
+                    -- =======================================================================y=

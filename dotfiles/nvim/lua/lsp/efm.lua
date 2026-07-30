@@ -1,6 +1,6 @@
 M = {}
 
--- Linters and Formatters from The Rad Lectures (YouTube)
+-- efmls-configs-supported Linters and Formatters from The Rad Lectures (YouTube)
 local selene = require("efmls-configs.linters.selene")               -- lua linter
 local stylua = require("efmls-configs.formatters.stylua")            -- lua formatter
 local flake8 = require("efmls-configs.linters.flake8")               -- python linter
@@ -9,17 +9,23 @@ local golint = require("efmls-configs.linters.golangci_lint")        -- go linte
 local gofumpt = require("efmls-configs.formatters.gofumpt")          -- go formatter
 local eslint_d = require("efmls-configs.linters.eslint_d")           -- ts/js/solidity/json/react/svelte/vue linter
 local prettier_d = require("efmls-configs.formatters.prettier_d")    -- ts/js/solidity/json/markdown/docker/html/css/react/svelte/vue formatter
-local fixjson = require("efmls-configs.formatters.fixjson")          -- json formatter
 local cpplint = require("efmls-configs.linters.cpplint")             -- c/cpp linter
 local clangformat = require("efmls-configs.formatters.clang_format") -- c/cpp formatter
+local fixjson = require("efmls-configs.formatters.fixjson")          -- json formatter
 local shellcheck = require("efmls-configs.linters.shellcheck")       -- bash linter
 local shfmt = require("efmls-configs.formatters.shfmt")              -- bash formatter
 local hadolint = require("efmls-configs.linters.hadolint")           -- docker linter
 local cmakelint = require("efmls-configs.linters.cmake_lint")        -- cmake linter
 local yamllint = require("efmls-configs.linters.yamllint")           -- yaml linter
 
+-- Non-supported Linters and Formatters configurations
+local csharpier = {
+    formatCommand = 'csharpier --write-stdout',
+    formatStdin = true,
+}
 
 M.tools = {
+    -- efmls-config supported
     'selene',
     'stylua',
     'flake8',
@@ -28,21 +34,24 @@ M.tools = {
     'gofumpt',
     'prettierd',
     'eslint_d',
+    'cpplint',
     'fixjson',
     'shellcheck',
     'shfmt',
     'hadolint',
-    'cpplint',
     'clang-format',
     'cmakelint',
     'yamllint',
+    -- efmls-config non-supported
+    'csharpier',
 }
 
--- Get default configuration
+-- Language Configurations for EFM Language Server
 -- local languages = require('efmls-configs.defaults').languages()
 local languages = {
     c = { clangformat, cpplint },
     cpp = { clangformat, cpplint },
+    cs = { csharpier },
     css = { prettier_d },
     docker = { hadolint, prettier_d },
     cmake = { cmakelint, },

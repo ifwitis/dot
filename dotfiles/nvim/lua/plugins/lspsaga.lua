@@ -19,16 +19,6 @@ return {
 				scroll_up = "<C-k>",
 				scroll_down = "<C-j>",
 			},
-			-- Use enter to open file with finder
-			finder = {
-				keys = {
-					toggle_or_open = "<CR>",
-					vsplit = "v",
-					split = "s",
-					tabe = "t",
-					quit = "q",
-				},
-			},
 			-- Use enter to open file with definition preview
 			definition = {
 				keys = {
