@@ -1,7 +1,6 @@
 ---
-description: Reviews the last commit made and performs a full code review pass as well as determines if the plan was executed completely. 
-Documents any drift that occurred during implementation. 
-arguments:  Provide a <optional> plan file in the arguments for the review to analyze. It is strongly advised to run this command within the session of a plan execution, after running commit.
+description: Perform a full code review pass on the last commit made, and determines if the provided plan was executed successfully. 
+Documents any drift that occurred during implementation. Provide a <optional> plan file in the arguments for the review to analyze. It is strongly advised to run this command within the session of a plan execution, after running commit.
 ---
 
 # Review Plan

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://opencode.ai/config.json",
+    "$schema": "https://opencode.ai/config.json",
     "provider": {
         // MIT Parley Configuration
         "mit-parley": {
@@ -33,10 +33,23 @@
                 "qwen2.5-coder:latest": {
                     "name": "Qwen 2.5"
                 },
-                "laguna-xs-2.1": {
-                    "name": "Laguna XS 2.1"
-                }
+                // "laguna-xs-2.1": {
+                //     "name": "Laguna XS 2.1"
+                // }
             }
+        }
+    },
+    "permission": {
+        "*": "ask",
+        "bash": {
+            "*": "ask",
+            "git status*": "allow",
+            "git log*": "allow",
+            "git diff*": "allow",
+            "git branch*": "allow",
+            "mv*": "deny",
+            "rm*": "deny",
+            "grep*": "allow",
         }
     }
 }
