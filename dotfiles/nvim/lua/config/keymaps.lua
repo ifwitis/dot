@@ -47,16 +47,15 @@ end
 
 -- Remap Redo to Leader+U
 map('n', '<leader>u', '<C-r>', { desc = "Redo" })
--- Remap Backsapce to Delete 
-map('n', '<BS>', '<S-x>', { desc = "Delete character" })
+-- Remap Backspace to Delete 
+map('n', '<BS>', '"_<S-x>', { desc = "Delete prev character without copying" })
 
 ------------------------------------------------------
 ------------------ Visual Effects --------------------
 ------------------------------------------------------
 
 -- Remove highlighting
-map('n', '<leader>h', '<cmd>noh<CR>', { desc = "Remove highlighting" })
-
+map('n', '<leader>rh', '<cmd>noh<CR>', { desc = "Remove highlighting" })
 
 ------------------------------------------------------
 ------------------ Open / Closing --------------------
@@ -65,7 +64,6 @@ map('n', '<leader>h', '<cmd>noh<CR>', { desc = "Remove highlighting" })
 -- Close files
 map('n', '<leader>qa', '<cmd>wqa<CR>', { desc = "Save all and quit" })
 map('n', '<leader>qq', '<cmd>qa!<CR>', { desc = "Force quit all" })
-
 
 ------------------------------------------------------
 ---------------- Window Navigation -------------------
@@ -168,29 +166,64 @@ map("c", "<M-BS>", "<C-w>", { desc = "Delete word backward" }) -- Backspace
 -- map('i', '<M-Left>', '<C-o>b', { desc = 'Shift left one word' })     -- Option/Alt + Left
 -- map('i', '<M-Right>', '<C-o>w', { desc = 'Shift right one word' })   -- Option/Alt + Right
 
--- Smart Indent (Matches indent in empty line)
+-- Smart Indent (Matches indent of nearest non-empty line above on an empty line)
 map("i", "<Tab>", function()
-    return (vim.fn.getline('.') == '' and vim.fn.line('.') ~= 1) and '<M-BS><CR>' or '<Tab>'
+    local line_num = vim.fn.line('.')
+    local col = vim.fn.col('.')
+    local before_cursor = vim.fn.getline('.'):sub(1, col - 1)
+    -- Only smart-indent when there's nothing but whitespace before the cursor
+    if not before_cursor:match("^%s*$") or line_num == 1 then
+        return "<Tab>"
+    end
+    -- Calculate target indent of nearest non-whitespace line above
+    local target_indent = nil
+    for l = line_num - 1, 1, -1 do
+        local line = vim.fn.getline(l)
+        if not line:match("^%s*$") then
+            target_indent = line:match("^%s*")
+            break
+        end
+    end
+    -- No content above at all, just a normal tab
+    if not target_indent then
+        return "<Tab>"
+    end
+    -- If not already at indent, format
+    if #before_cursor < #target_indent then
+        if vim.bo.indentexpr ~= "" or vim.bo.cindent or vim.bo.lisp then
+            return "<C-f>"
+        end
+    end
+    -- Default Tab fallback
+    return "<Tab>"
 end, { expr = true, desc = "Smart indent" })
 
 -- Delete word
 map("i", "<M-BS>", "<C-w>", { desc = "Delete word backward" })     -- Option/Alt + Backspace
 
 -- Selection
-map({ "n", "i" }, "<S-Left>", "<Esc>v",  { desc = "Start line selection left" })          -- Shift + Left
-map({ "n", "i" }, "<S-Right>", "<Esc>lv", { desc = "Start line selection right" })       -- Shift + Right
-map({ "n", "i" }, "<S-Up>", "<Esc>lvk", { desc = "Start line selection up" })              -- Shift + Up
-map({ "n", "i" }, "<S-Down>", "<Esc>vj", { desc = "Start line selection down" })          -- Shift + Down
+map({ "n", "i" }, "<S-Left>", "<Esc>v",  { desc = "Start line selection left" })        -- Shift + Left
+map({ "n", "i" }, "<S-Right>", "<Esc>lv", { desc = "Start line selection right" })      -- Shift + Right
+map({ "n", "i" }, "<S-Up>", "<Esc>lvk", { desc = "Start line selection up" })           -- Shift + Up
+map({ "n", "i" }, "<S-Down>", "<Esc>vj", { desc = "Start line selection down" })        -- Shift + Down
 
 -- Undo/Redo
 -- (Mac)
-map({"i", "n"}, "<D-z>", "<C-o>u", { desc = "Undo" })          -- CTRL + Z
-map({"i", "n"}, "<D-S-z>", "<C-o><C-r>", { desc = "Redo" })    -- CTRL + SHIFT + Z
-map({"i", "n"}, "<D-y>", "<C-o><C-r>", { desc = "Redo" })      -- CTRL + Y
+map("i", "<D-z>", "<C-o>u", { desc = "Undo" })          -- CMD + Z
+map("i", "<D-S-z>", "<C-o><C-r>", { desc = "Redo" })    -- CMD + SHIFT + Z
+map("i", "<D-y>", "<C-o><C-r>", { desc = "Redo" })      -- CMD + Y
+---
+map("n", "<D-z>", "u", { desc = "Undo" })          -- CMD + Z
+map("n", "<D-S-z>", "<C-r>", { desc = "Redo" })    -- CMD + SHIFT + Z
+map("n", "<D-y>", "<C-r>", { desc = "Redo" })      -- CMD + Y
 -- (Windows/General)
 map("i", "<C-z>", "<C-o>u", { desc = "Undo" })          -- CTRL + Z
 map("i", "<C-S-z>", "<C-o><C-r>", { desc = "Redo" })    -- CTRL + SHIFT + Z
 map("i", "<C-y>", "<C-o><C-r>", { desc = "Redo" })      -- CTRL + Y
+---
+map("n", "<C-z>", "u", { desc = "Undo" })          -- CTRL + Z
+map("n", "<C-S-z>", "<C-r>", { desc = "Redo" })    -- CTRL + SHIFT + Z
+map("n", "<C-y>", "<C-r>", { desc = "Redo" })      -- CTRL + Y
 
 
 ------------------------------------------------------
@@ -226,9 +259,10 @@ end
 -- =======================================================================
 
 -- ======================================================================
--- Lazy
+-- Neovim / Lazy
 -- ======================================================================
 map('n', '<leader>l', '<cmd>Lazy<CR>', { desc = "Open Lazy" })
+map('n', '<leader>h', function() Snacks.dashboard.open() end, { desc = "Go to Dashboard Home" })
 
 
 -- ======================================================================
