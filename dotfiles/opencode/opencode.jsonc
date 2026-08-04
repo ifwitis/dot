@@ -41,6 +41,7 @@
     },
     "permission": {
         "*": "ask",
+        "read": "allow",
         "bash": {
             "*": "ask",
             "git status*": "allow",
@@ -49,7 +50,9 @@
             "git branch*": "allow",
             "mv*": "deny",
             "rm*": "deny",
-            "grep*": "allow",
+            "[Gg]lob*": "allow",
+            "ls*": "allow",
+            "[Gg]rep*": "allow",
         }
     }
 }
