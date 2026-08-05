@@ -1,0 +1,24 @@
+# Include %d/.colima/ssh_config
+
+# Personal / Redundant since configured in .gitconfig
+Host ifwitis.github.com
+    User git
+    HostName github.com
+    AddKeysToAgent yes
+    IdentityFile %d/.ssh/id_personal
+    SetEnv TERM=xterm-256color
+
+# Work
+Host work.github.com
+    User git
+    HostName github.com
+    AddKeysToAgent yes
+    IdentityFile %d/.ssh/id_work
+    IdentitiesOnly yes
+
+# CTF Practice
+Host dojo.pwn.college
+    AddKeysToAgent yes
+    IdentityFile %d/.ssh/ctfs/prac_key 
+    IdentitiesOnly yes
+
