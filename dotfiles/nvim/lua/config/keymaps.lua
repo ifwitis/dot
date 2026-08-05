@@ -70,13 +70,16 @@ map('n', '<leader>qq', '<cmd>qa!<CR>', { desc = "Force quit all" })
 ------------------------------------------------------
 
 -- Window navigation
-map('n', '<C-h>', '<C-w>h', { desc = "Move to left window" })
-map('n', '<C-j>', '<C-w>j', { desc = "Move to bottom window" })
-map('n', '<C-k>', '<C-w>k', { desc = "Move to top window" })
-map('n', '<C-l>', '<C-w>l', { desc = "Move to right window" })
+map('n', '<leader>wh', '<C-w>h', { desc = "Move to left window" })
+map('n', '<leader>wj', '<C-w>j', { desc = "Move to bottom window" })
+map('n', '<leader>wk', '<C-w>k', { desc = "Move to top window" })
+map('n', '<leader>wl', '<C-w>l', { desc = "Move to right window" })
 
 -- Return focus to previous window
-map('n', '<leader>w', '<C-w>p', { desc = "Return focus to previous window" })
+map('n', '<leader>wf', '<C-w>p', { desc = "Return focus to previous window" })
+
+-- Delete window
+map('n', '<leader>wd', '<C-w>c', { desc = "Delete current window" })
 
 -- Center screen when jumping
 map('n', '<C-u>', '<C-u>zz', { desc = "Half page up, centered" })
