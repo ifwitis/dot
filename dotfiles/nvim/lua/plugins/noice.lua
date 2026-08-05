@@ -5,7 +5,11 @@ return {
         notify = {
             enabled = true,
             view = "notify",
-        }
+            view_error = "notify",
+            view_warn = "notify",
+            view_history = "messages",
+            view_search = false,
+        },
     },
     dependencies = {
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries

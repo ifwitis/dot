@@ -28,15 +28,16 @@ source "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme"
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
 # Initialize the base system PATH
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/libexec"
 
 # Append additional tools
-export PATH="${PATH}:/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages" # Python
-export PATH="${PATH}:/Library/Frameworks/Python.framework/Versions/3.13/bin"
-export PATH="${PATH}:/opt/homebrew/bin"     # Homebrew packages
-export PATH="${PATH}:${HOME}/.cargo/bin"    # Rust 
-export PATH="$PATH:$HOME/.opencode/bin"     # Opencode
+export PATH="/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages:${PATH}" # Python
+export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:${PATH}"
+export PATH="/opt/homebrew/bin:${PATH}"     # Homebrew packages
+export PATH="${HOME}/.cargo/bin:${PATH}"    # Rust 
+export PATH="$HOME/.opencode/bin:$PATH"     # Opencode
 export GOPATH="$HOME/.local/share/go"       # Configure golang's PATH
 export GPG_TTY=$TTY                         # Configure GPG terminal path
 

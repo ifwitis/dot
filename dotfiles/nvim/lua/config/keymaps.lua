@@ -48,7 +48,17 @@ end
 -- Remap Redo to Leader+U
 map('n', '<leader>u', '<C-r>', { desc = "Redo" })
 -- Remap Backspace to Delete 
-map('n', '<BS>', '"_<S-x>', { desc = "Delete prev character without copying" })
+map('n', '<BS>', function()
+    local line_len = string.len(vim.api.nvim_get_current_line())
+    local col = vim.fn.col('.')
+    if line_len == 0 then
+        return 'i<BS><Esc>'
+    elseif col == line_len then
+        return '"_x'
+    else
+        return '"_<S-x>'
+    end
+end, { expr = true, desc = "Delete prev character without copying" })
 
 ------------------------------------------------------
 ------------------ Visual Effects --------------------
@@ -64,6 +74,8 @@ map('n', '<leader>rh', '<cmd>noh<CR>', { desc = "Remove highlighting" })
 -- Close files
 map('n', '<leader>qa', '<cmd>wqa<CR>', { desc = "Save all and quit" })
 map('n', '<leader>qq', '<cmd>qa!<CR>', { desc = "Force quit all" })
+map('n', '<leader>qw', '<cmd>w<CR>', { desc = "Save buffer" })
+map('n', '<leader>qc', '<cmd>wq<CR>', { desc = "Save and quit buffer" })
 
 ------------------------------------------------------
 ---------------- Window Navigation -------------------
@@ -265,6 +277,7 @@ end
 -- Neovim / Lazy
 -- ======================================================================
 map('n', '<leader>l', '<cmd>Lazy<CR>', { desc = "Open Lazy" })
+---@diagnostic disable-next-line: undefined-global
 map('n', '<leader>h', function() Snacks.dashboard.open() end, { desc = "Go to Dashboard Home" })
 
 

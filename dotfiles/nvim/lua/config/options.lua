@@ -29,10 +29,13 @@ o.splitright = true       -- Vertical split to the right
 o.splitbelow = true       -- Horizontal split to the bottom
 o.ignorecase = true       -- Ignore case letters when search
 o.smartcase = true        -- Ignore lowercase for the whole pattern
+o.wrap = true             -- Enable wrapping
 o.linebreak = true        -- Wrap on word boundary
+o.breakindent = true      -- Keep indentation on wrapped lines
 o.laststatus = 3          -- Set global statusline
-o.inccommand = "nosplit"    -- Set Ex command previews
+o.inccommand = "nosplit"  -- Set Ex command previews
 o.termguicolors = true    -- Enable 24-bit RGB colors
+o.cmdheight = 4           -- Increase cmd height to prevent blocking
 
 o.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-lCursor,r-cr:hor20,o:hor50"     -- Map GUI Cursor to reflect light/dark mode settings
 

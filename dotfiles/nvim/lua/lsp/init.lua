@@ -39,7 +39,7 @@ local servers = {
 }
 
 -- EFM Linter and Formatter Tools
-local has_efm, efm_config_module = pcall(require, "lsp.efm")
+-- local has_efm, efm_config_module = pcall(require, "lsp.efm")
 local mason_tools = vim.list_extend(vim.deepcopy(servers), has_efm and efm_config_module.tools or {})
 -- vim.print(has_efm, efm_config_module)
 -- vim.print(mason_tools)

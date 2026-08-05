@@ -35,5 +35,5 @@ bindkey '^[[Z' reverse-menu-complete
 
 # Handy ls shortcuts
 alias ll='ls -lh'
-alias la='ls -Al'
+alias la='ls -Alh'
 

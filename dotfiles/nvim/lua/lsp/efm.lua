@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 -- efmls-configs-supported Linters and Formatters from The Rad Lectures (YouTube)
 local selene = require("efmls-configs.linters.selene")               -- lua linter
@@ -75,7 +75,7 @@ local languages = {
 local filetypes = vim.tbl_keys(languages)
 
 M.config = {
-    cmd = 'efm-langserver',
+    cmd = { 'efm-langserver' },
     filetypes = filetypes,
     root_markers = { '.git' },
     settings = {

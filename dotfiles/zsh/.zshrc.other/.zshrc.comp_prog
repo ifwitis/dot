@@ -1,36 +1,221 @@
 # ~/.zshrc.other/compprog — competitive programming helpers
 
 # --- Compiler detection -------------------------------------------------
-# Prefer Homebrew GCC (ships correct bits/stdc++.h, matches Codeforces).
-# Fall back to clang++ otherwise.
 _cp_detect_cxx() {
     local candidate
-    # Look for the newest g++-NN first (g++-15, g++-14, ...)
     for candidate in g++-{20..11}; do
         if command -v "$candidate" &>/dev/null; then
             echo "$candidate"; return
         fi
     done
-    # Plain g++ (may be a clang shim on macOS)
     if command -v g++ &>/dev/null; then
         echo "g++"; return
     fi
     echo "clang++"
 }
 
-export CP_CXX="$(_cp_detect_cxx)" 
+export CP_CXX="$(_cp_detect_cxx)"
 
 # --- Build + run functions ---------------------------------------------
-# Debug build: sanitizers + warnings (catches uninitialized vars, UB, etc.)
 cpd() {
     "$CP_CXX" -std=c++17 -Wall -Wextra -fsanitize=address,undefined -g "$1.cpp" -o "$1" && ./"$1"
 }
 
-# Fast build: optimized, mirrors the judge.
 cpf() {
     "$CP_CXX" -std=c++17 -O2 "$1.cpp" -o "$1" && ./"$1"
 }
 
-# Show which compiler is in use.
-cpwhich() { echo "CP_CXX = $CP_CXX"; "$CP_CXX" --version | head -1 }
+cpwhich() { echo "CP_CXX = $CP_CXX"; "$CP_CXX" --version | head -1; }
 
+cpbits() {
+    if [[ "$(uname)" != "Darwin" ]]; then
+        echo "cpbits: This function is intended for macOS only (detected: $(uname))."
+        return 1
+    fi
+
+    local cpp_include
+    cpp_include="$(xcrun --show-sdk-path)/usr/include/c++/v1"
+
+    if [[ -z "$cpp_include" || ! -d "$cpp_include" ]]; then
+        echo "Could not locate clang's C++ include directory."
+        echo "   Try: xcode-select --install"
+        return 1
+    fi
+
+    echo "Detected clang C++ include dir:"
+    echo "   $cpp_include"
+
+    local bits_dir="$cpp_include/bits/"
+    local header="stdc++.h"
+    local bits_file="$bits_dir$header"
+
+    local SUDO=""
+    if [[ ! -w "$cpp_include" ]]; then
+        # echo "Directory is not writable; sudo will be used."
+        SUDO="sudo"
+    fi
+
+    if [[ -d "$bits_dir" ]]; then
+        echo "bits/ directory already exists: "
+        [[ -f "$bits_file" ]] && echo "   Existing file: $header"
+        printf "   Overwrite? [y/N] "
+        read -r reply
+        case "$reply" in
+            [Yy]*) echo "→ Overwriting..." ;;
+            *) echo "Aborted. No changes made."; return 0 ;;
+        esac
+    else
+        echo "Creating directory: $bits_dir"
+        $SUDO mkdir -p "$bits_dir" || { echo "Failed to create directory."; return 1; }
+    fi
+
+    $SUDO tee "$bits_file" > /dev/null <<'EOF'
+// C++ includes used for precompiling -*- C++ -*-
+
+// Copyright (C) 2003-2022 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file stdc++.h
+ *  This is an implementation file for a precompiled header. Modified for personal use -- 2026
+ */
+
+// 17.4.1.2 Headers
+// C
+#ifndef _GLIBCXX_NO_ASSERT
+#include <cassert>
+#endif
+#include <cctype>
+#include <cerrno>
+#include <cfloat>
+#include <ciso646>
+#include <climits>
+#include <clocale>
+#include <cmath>
+#include <csetjmp>
+#include <csignal>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <cwchar>
+#include <cwctype>
+
+#if __cplusplus >= 201103L
+#include <cfenv>
+#include <cinttypes>
+#include <cstdint>
+#endif
+
+// C++
+#include <algorithm>
+#include <bitset>
+#include <complex>
+#include <deque>
+#include <exception>
+#include <fstream>
+#include <functional>
+#include <iomanip>
+#include <ios>
+#include <iosfwd>
+#include <iostream>
+#include <istream>
+#include <iterator>
+#include <limits>
+#include <list>
+#include <locale>
+#include <map>
+#include <memory>
+#include <new>
+#include <numeric>
+#include <ostream>
+#include <queue>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <streambuf>
+#include <string>
+#include <typeinfo>
+#include <utility>
+#include <valarray>
+#include <vector>
+
+#if __cplusplus >= 201103L
+#include <array>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <forward_list>
+#include <future>
+#include <initializer_list>
+#include <mutex>
+#include <random>
+#include <ratio>
+#include <regex>
+#include <scoped_allocator>
+#include <system_error>
+#include <thread>
+#include <tuple>
+#include <typeindex>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#endif
+
+#if __cplusplus >= 201402L
+#include <shared_mutex>
+#endif
+
+#if __cplusplus >= 201703L
+#include <any>
+// #include <execution>
+#include <filesystem>
+#include <optional>
+#include <string_view>
+#include <variant>
+#endif
+
+#if __cplusplus >= 202002L
+#include <bit>
+#include <compare>
+#include <concepts>
+#include <numbers>
+#include <ranges>
+#include <span>
+#include <version>
+#endif
+
+#if __cplusplus > 202002L
+#include <expected>
+#include <stdatomic.h>
+#endif
+EOF
+
+    if [[ -f "$bits_file" ]]; then
+        echo "Successfully wrote: $bits_file"
+    else
+        echo "Failed to write header."
+        return 1
+    fi
+}
