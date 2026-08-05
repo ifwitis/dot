@@ -1,0 +1,36 @@
+# ~/.zshrc.other/compprog — competitive programming helpers
+
+# --- Compiler detection -------------------------------------------------
+# Prefer Homebrew GCC (ships correct bits/stdc++.h, matches Codeforces).
+# Fall back to clang++ otherwise.
+_cp_detect_cxx() {
+    local candidate
+    # Look for the newest g++-NN first (g++-15, g++-14, ...)
+    for candidate in g++-{20..11}; do
+        if command -v "$candidate" &>/dev/null; then
+            echo "$candidate"; return
+        fi
+    done
+    # Plain g++ (may be a clang shim on macOS)
+    if command -v g++ &>/dev/null; then
+        echo "g++"; return
+    fi
+    echo "clang++"
+}
+
+export CP_CXX="$(_cp_detect_cxx)" 
+
+# --- Build + run functions ---------------------------------------------
+# Debug build: sanitizers + warnings (catches uninitialized vars, UB, etc.)
+cpd() {
+    "$CP_CXX" -std=c++17 -Wall -Wextra -fsanitize=address,undefined -g "$1.cpp" -o "$1" && ./"$1"
+}
+
+# Fast build: optimized, mirrors the judge.
+cpf() {
+    "$CP_CXX" -std=c++17 -O2 "$1.cpp" -o "$1" && ./"$1"
+}
+
+# Show which compiler is in use.
+cpwhich() { echo "CP_CXX = $CP_CXX"; "$CP_CXX" --version | head -1 }
+
