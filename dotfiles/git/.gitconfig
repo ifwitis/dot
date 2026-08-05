@@ -12,6 +12,7 @@
     branch = false
     tag = false
     log = false
+    grep = false
 [alias]
     lg = log -n 10 --oneline --graph --decorate
     lgp = log -n 20 --graph --decorate | less
@@ -19,9 +20,9 @@
 [pull]
     rebase = false
 [commit]
-	gpgsign = true
+    gpgsign = true
 [tag]
-	gpgSign = true
+    gpgSign = true
 
 # Personal Config
 [includeIf "gitdir:~/Documents/"]
