@@ -18,11 +18,89 @@ export CP_CXX="$(_cp_detect_cxx)"
 
 # --- Build + run functions ---------------------------------------------
 cpd() {
-    "$CP_CXX" -std=c++17 -Wall -Wextra -fsanitize=address,undefined -g "$1.cpp" -o "$1" && ./"$1"
+    local exe="$1"
+    shift
+
+    local infile=""
+    local outfile=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -i|--input)
+                infile="$2"
+                shift 2
+                ;;
+            -o|--output)
+                outfile="$2"
+                shift 2
+                ;;
+            *)
+                echo "Unknown option: $1"
+                return 1
+                ;;
+        esac
+    done
+
+    "$CP_CXX" -std=c++17 -Wall -Wextra -fsanitize=address,undefined -g \
+        "$exe.cpp" -o "$exe" || return
+
+    if [[ -n "$infile" ]]; then
+        exec_args="<\"$infile\""
+    fi
+
+    if [[ -n "$infile" && -n "$outfile" ]]; then
+        ./"$exe" <"$infile" >"$outfile"
+    elif [[ -n "$infile" ]]; then
+        ./"$exe" <"$infile"
+    elif [[ -n "$outfile" ]]; then
+        ./"$exe" >"$outfile"
+    else
+        ./"$exe"
+    fi
 }
 
 cpf() {
-    "$CP_CXX" -std=c++17 -O2 "$1.cpp" -o "$1" && ./"$1"
+    local exe="$1"
+    shift
+
+    local infile=""
+    local outfile=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -i|--input)
+                infile="$2"
+                shift 2
+                ;;
+            -o|--output)
+                outfile="$2"
+                shift 2
+                ;;
+            *)
+                echo "Unknown option: $1"
+                return 1
+                ;;
+        esac
+    done
+
+    "$CP_CXX" -std=c++17 -O2 \
+        "$exe.cpp" -o "$exe" || return
+
+    if [[ -n "$infile" && -n "$outfile" ]]; then
+        ./"$exe" <"$infile" >"$outfile"
+    elif [[ -n "$infile" ]]; then
+        ./"$exe" <"$infile"
+    elif [[ -n "$outfile" ]]; then
+        ./"$exe" >"$outfile"
+    else
+        ./"$exe"
+    fi
+}
+
+cpclean() {
+    find . -maxdepth 1 -type f ! -name "*.*" -delete
+    find . -maxdepth 1 -type d -name "*.dSYM" -exec rm -rf {} +
+    find . -maxdepth 1 \( -type f -o -type d \) -name "*test*" -exec rm -rf {} +
 }
 
 cpwhich() { echo "CP_CXX = $CP_CXX"; "$CP_CXX" --version | head -1; }
