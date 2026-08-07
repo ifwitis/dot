@@ -17,15 +17,21 @@ _cp_detect_cxx() {
 export CP_CXX="$(_cp_detect_cxx)"
 
 # --- Build + run functions ---------------------------------------------
-cpd() {
-    local exe="$1"
+_cpbuild() {
+    local raw_exe="$1"
+    local exe="${raw_exe%.*}"
     shift
-
     local infile=""
     local outfile=""
+    local -a opts=('-std=c++17' -o2)
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
+            -d)
+                opts+=(-Wall -Wextra -fsanitize=address,undefined -g)
+                dset=1
+                shift
+                ;;
             -i|--input)
                 infile="$2"
                 shift 2
@@ -35,70 +41,82 @@ cpd() {
                 shift 2
                 ;;
             *)
-                echo "Unknown option: $1"
+                echo "unknown option: $1"
                 return 1
                 ;;
         esac
     done
 
-    "$CP_CXX" -std=c++17 -Wall -Wextra -fsanitize=address,undefined -g \
-        "$exe.cpp" -o "$exe" || return
+    local cmd="$CP_CXX ${opts[@]} $exe.cpp -o $exe";
+    printf "Executing %s... \n" "$cmd"
 
-    if [[ -n "$infile" ]]; then
-        exec_args="<\"$infile\""
-    fi
+    if ! "$CP_CXX" "${opts[@]}" "$exe.cpp" -o "$exe"; then 
+        printf "Compilation of ./$exe failed, aborting... \n"
+        return 1
+    fi 
 
+
+    printf "Now running ./$exe... \n"
     if [[ -n "$infile" && -n "$outfile" ]]; then
-        ./"$exe" <"$infile" >"$outfile"
+        ./"$exe" < "$infile" > "$outfile"
     elif [[ -n "$infile" ]]; then
-        ./"$exe" <"$infile"
+        ./"$exe" < "$infile"
     elif [[ -n "$outfile" ]]; then
-        ./"$exe" >"$outfile"
+        ./"$exe" > "$outfile"
     else
         ./"$exe"
     fi
+}
+
+cpd() {
+    if [[ "$#" -eq 0 ]]; then
+        printf "%s: \033[1;31merror:\033[0m No arguments provided \n" "$(basename "$0")"
+        printf "See '%s --help' for usage details. \n" "$(basename "$0")"
+        return 1
+    fi
+
+    for arg in "$@"; do 
+        case "$arg" in
+            -h|--help)
+                _cphelp "$0"
+                return 0
+        esac
+    done
+
+    _cpbuild "$@" -d
 }
 
 cpf() {
-    local exe="$1"
-    shift
+    if [[ "$#" -eq 0 ]]; then
+        printf "%s: \033[1;31merror:\033[0m No arguments provided \n" "$(basename "$0")"
+        printf "See '%s --help' for usage details. \n" "$(basename "$0")"
+        return 1
+    fi
 
-    local infile=""
-    local outfile=""
-
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -i|--input)
-                infile="$2"
-                shift 2
-                ;;
-            -o|--output)
-                outfile="$2"
-                shift 2
-                ;;
-            *)
-                echo "Unknown option: $1"
-                return 1
-                ;;
+    for arg in "$@"; do 
+        case "$arg" in
+            -h|--help) 
+                _cphelp "$0"
+                return 0
         esac
     done
 
-    "$CP_CXX" -std=c++17 -O2 \
-        "$exe.cpp" -o "$exe" || return
+    _cpbuild "$@"
+}
 
-    if [[ -n "$infile" && -n "$outfile" ]]; then
-        ./"$exe" <"$infile" >"$outfile"
-    elif [[ -n "$infile" ]]; then
-        ./"$exe" <"$infile"
-    elif [[ -n "$outfile" ]]; then
-        ./"$exe" >"$outfile"
-    else
-        ./"$exe"
-    fi
+# --- Miscellaneous --------------------------------------------------
+_cphelp() {
+    local other=""
+    [[ "$1" = "cpf" ]] && other="cpd" || other="cpf"
+    printf 'usage: %s <code_file> [-i input_file] [-o output_file] \n' "$1"
+    printf '\nAdditional tools: %s, cpclean, cpwhich, cpbits \n' "$other"
+    return 0
 }
 
 cpclean() {
+    printf "Deleting all .in, .out, .dSYM, test, and extension-less files...\n"
     find . -maxdepth 1 -type f ! -name "*.*" -delete
+    find . -maxdepth 1 -type f \( -name "*.in" -o -name "*.out" \) -delete 
     find . -maxdepth 1 -type d -name "*.dSYM" -exec rm -rf {} +
     find . -maxdepth 1 \( -type f -o -type d \) -name "*test*" -exec rm -rf {} +
 }
