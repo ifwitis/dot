@@ -203,9 +203,21 @@ map("i", "<Tab>", function()
     if not target_indent then
         return "<Tab>"
     end
-    -- If not already at indent, format
+    -- If not already at indent, auto-format
     if #before_cursor < #target_indent then
-        if vim.bo.indentexpr ~= "" or vim.bo.cindent or vim.bo.lisp then
+        -- Calculate indent from auto-formatting
+        local auto_cols = -1
+        if vim.bo.indentexpr ~= "" then
+            vim.v.lnum = line_num
+            local ok, result = pcall(vim.fn.eval, vim.bo.indentexpr)
+            if ok then auto_cols = result end
+        elseif vim.bo.cindent then
+            auto_cols = vim.fn.cindent(line_num)
+        elseif vim.bo.lisp then
+            auto_cols = vim.fn.lispindent(line_num)
+        end
+        -- Only use <C-f> if auto-format actually advances our cursor
+        if auto_cols > #before_cursor then
             return "<C-f>"
         end
     end
