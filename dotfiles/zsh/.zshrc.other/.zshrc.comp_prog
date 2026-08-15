@@ -33,10 +33,16 @@ _cpbuild() {
                 shift
                 ;;
             -i|--input)
+                if [[ -z "$2" || "$2" == -* ]]; then
+                    return 3
+                fi
                 infile="$2"
                 shift 2
                 ;;
             -o|--output)
+                if [[ -z "$2" || "$2" == -* ]]; then
+                    return 4
+                fi
                 outfile="$2"
                 shift 2
                 ;;
@@ -55,44 +61,51 @@ _cpbuild() {
         return 1
     fi 
 
-
+    local tmp_out=$(mktemp)
     printf "Now running ./$exe... \n"
     if [[ -n "$infile" && -n "$outfile" ]]; then
-        ./"$exe" < "$infile" > "$outfile"
-    elif [[ -n "$infile" ]]; then
+        ./"$exe" < "$infile" > "$tmp_out"
+        if diff -u "$outfile" "$tmp_out" > /dev/null; then
+            printf "✓ Test case passed!\n"
+        else 
+            printf "✗ Test case failed.\n"
+            echo "---------------------------------------------------"
+            echo "Expected: "
+            echo "---------------------------------------------------"
+            diff -u "$outfile" "$tmp_out" | grep '^-' | head -n 15 | cut -c2- | tail -n +2
+            printf "\n"
+            echo "---------------------------------------------------"
+            echo "Got: "
+            echo "---------------------------------------------------"
+            diff -u "$outfile" "$tmp_out" | grep '^+' | head -n 15 | cut -c2- | tail -n +2
+            printf "\n"
+        fi
+    elif [[ -n "$infile" ]]; then   
         ./"$exe" < "$infile"
     elif [[ -n "$outfile" ]]; then
-        ./"$exe" > "$outfile"
+        return 2
+       
     else
         ./"$exe"
     fi
+    
+    # Clean up the temporary file
+    rm -f "$tmp_out"
 }
 
-cpd() {
-    if [[ "$#" -eq 0 ]]; then
-        printf "%s: \033[1;31merror:\033[0m No arguments provided \n" "$(basename "$0")"
-        printf "See '%s --help' for usage details. \n" "$(basename "$0")"
-        return 1
-    fi
-
-    for arg in "$@"; do 
-        case "$arg" in
-            -h|--help)
-                _cphelp "$0"
-                return 0
-        esac
-    done
-
-    _cpbuild "$@" -d
-}
+local _error_fmt="%s: \033[1;31merror:\033[0m %s\n"
 
 cpf() {
+    local prog_name="$(basename "$0")"
+
+    # Exit if no args provided
     if [[ "$#" -eq 0 ]]; then
-        printf "%s: \033[1;31merror:\033[0m No arguments provided \n" "$(basename "$0")"
-        printf "See '%s --help' for usage details. \n" "$(basename "$0")"
+        printf "$_error_fmt" "$prog_name" "no arguments provided"
+        printf "See '%s --help' for usage details. \n" "$prog_name"
         return 1
     fi
 
+    # Check for help flag
     for arg in "$@"; do 
         case "$arg" in
             -h|--help) 
@@ -101,7 +114,57 @@ cpf() {
         esac
     done
 
-    _cpbuild "$@"
+    # Otherwise, invalid first arg
+    if [[ ! -f "$1" ]]; then
+        printf "$_error_fmt" "$prog_name" "File '$1' does not exist or is not a valid file." >&2
+        return 1
+    fi
+
+    _cpbuild "$@" 
+    local ret=$?;
+    case "$ret" in 
+        1) return 1 ;;
+        2) printf "$_error_fmt" "$prog_name" "expected input file with output file" ;;
+        3) printf "$_error_fmt" "$prog_name" "missing input file after -i/--input" ;;
+        4) printf "$_error_fmt" "$prog_name" "missing output file after -o/--output" ;;
+    esac
+    return "$ret"
+}
+
+cpd() {
+    local prog_name="$(basename "$0")"
+
+     # Exit if no args provided
+    if [[ "$#" -eq 0 ]]; then
+        printf "$_error_fmt" "$prog_name" "no arguments provided"
+        printf "See '%s --help' for usage details. \n" "$prog_name"
+        return 1
+    fi
+
+    # Check for help flag
+    for arg in "$@"; do 
+        case "$arg" in
+            -h|--help) 
+                _cphelp "$0"
+                return 0
+        esac
+    done
+
+    # Otherwise, invalid first arg
+    if [[ ! -f "$1" ]]; then
+        printf "$_error_fmt" "$prog_name" "File '$1' does not exist or is not a valid file." >&2
+        return 1
+    fi
+
+    _cpbuild "$@" 
+    local ret=$?;
+    case "$ret" in 
+        1) return 1 ;;
+        2) printf "$_error_fmt" "$prog_name" "expected input file with output file" ;;
+        3) printf "$_error_fmt" "$prog_name" "missing input file after -i/--input" ;;
+        4) printf "$_error_fmt" "$prog_name" "missing output file after -o/--output" ;;
+    esac
+    return "$ret"
 }
 
 # --- Miscellaneous --------------------------------------------------
