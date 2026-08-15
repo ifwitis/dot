@@ -74,7 +74,7 @@ map('n', '<leader>rh', '<cmd>noh<CR>', { desc = "Remove highlighting" })
 -- Close files
 map('n', '<leader>qa', '<cmd>wqa<CR>', { desc = "Save all and quit" })
 map('n', '<leader>qq', '<cmd>qa!<CR>', { desc = "Force quit all" })
-map('n', '<leader>qw', '<cmd>w<CR>', { desc = "Save buffer" })
+map('n', '<leader>qw', '<cmd>w<CR><cmd>lua vim.notify("Buffer saved!")<CR>', { desc = "Save buffer" })
 map('n', '<leader>qc', '<cmd>wq<CR>', { desc = "Save and quit buffer" })
 
 ------------------------------------------------------
