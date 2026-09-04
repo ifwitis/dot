@@ -109,7 +109,6 @@ map('n', '<leader>sh', '<cmd>split<CR>', { desc = "Split window horizontally" })
 map('n', '<S-k>', '5kzz', { desc = "Scroll up faster" })
 map('n', '<S-j>', '5jzz', { desc = "Scroll down faster" })
 
-
 ------------------------------------------------------
 ---------------- Buffer Navigation -------------------
 ------------------------------------------------------

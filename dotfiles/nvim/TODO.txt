@@ -1,0 +1,5 @@
+- remove nvim-tree
+- multiple cursors
+- buffer tabs
+- yazi integration
+- setup latex plugin

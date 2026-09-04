@@ -36,6 +36,7 @@ o.laststatus = 3          -- Set global statusline
 o.inccommand = "nosplit"  -- Set Ex command previews
 o.termguicolors = true    -- Enable 24-bit RGB colors
 o.cmdheight = 4           -- Increase cmd height to prevent blocking
+o.hlsearch = false        -- Disable highlight searching
 
 o.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-lCursor,r-cr:hor20,o:hor50"     -- Map GUI Cursor to reflect light/dark mode settings
 
