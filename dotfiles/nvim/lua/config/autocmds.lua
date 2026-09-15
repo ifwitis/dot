@@ -6,15 +6,18 @@
 -- See: :h api-autocmd, :h augroup
 -- https://neovim.io/doc/user/autocmd.html
 
-local augroup = vim.api.nvim_create_augroup   -- Create/get autocommand group
-local autocmd = vim.api.nvim_create_autocmd   -- Create autocommand
+local augroup = vim.api.nvim_create_augroup -- Create/get autocommand group
+local autocmd = vim.api.nvim_create_autocmd -- Create autocommand
 
 -----------------------------------------------------------
 -- General settings
 -----------------------------------------------------------
 
--- Highlights text when yanked 
+local gen_settings_group = augroup("GeneralSettings", { clear = true })
+
+-- Highlights text when yanked
 autocmd("TextYankPost", {
+    group = gen_settings_group,
     callback = function()
         vim.highlight.on_yank({
             higroup = "IncSearch",
@@ -25,6 +28,7 @@ autocmd("TextYankPost", {
 
 -- Restore cursor to file position in previous editing session
 autocmd("BufReadPost", {
+    group = gen_settings_group,
     callback = function(args)
         local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
         local line_count = vim.api.nvim_buf_line_count(args.buf)
@@ -36,6 +40,7 @@ autocmd("BufReadPost", {
 
 -- Show cursorline only on active windows
 autocmd({ "InsertLeave", "WinEnter" }, {
+    group = gen_settings_group,
     callback = function()
         if vim.w.auto_cursorline then
             vim.wo.cursorline = true
@@ -45,6 +50,7 @@ autocmd({ "InsertLeave", "WinEnter" }, {
 })
 
 autocmd({ "InsertEnter", "WinLeave" }, {
+    group = gen_settings_group,
     callback = function()
         if vim.wo.cursorline then
             vim.w.auto_cursorline = true
@@ -55,7 +61,7 @@ autocmd({ "InsertEnter", "WinLeave" }, {
 
 
 -----------------------------------------------------------
--- LSP 
+-- LSP
 -----------------------------------------------------------
 
 local lsp_on_attach_group = augroup("LspMappings", {})
@@ -70,7 +76,9 @@ autocmd("LspAttach", {
 -- Neovim Treesitter
 -----------------------------------------------------------
 
+local treesitter_init_group = augroup("TreesitterInitialization", {})
 autocmd('FileType', {
+    group = treesitter_init_group,
     callback = function(ev)
         local lang = vim.treesitter.language.get_lang(ev.match)
         local available_langs = require('nvim-treesitter').get_available()
@@ -92,7 +100,9 @@ autocmd('FileType', {
 -- Colorscheme
 -----------------------------------------------------------
 
+local color_scheme_group = augroup("Colorscheme", {})
 autocmd("ColorScheme", {
+    group = color_scheme_group,
     pattern = "*",
     callback = function()
         if vim.o.background == "light" then
@@ -105,4 +115,23 @@ autocmd("ColorScheme", {
             vim.api.nvim_set_hl(0, "lCursor", { reverse = true, })
         end
     end,
+})
+
+
+-----------------------------------------------------------
+-- Mini
+-----------------------------------------------------------
+
+local mini_pairs_disable_group = augroup("MiniPairsDisableGroup", { clear = true })
+autocmd('FileType', {
+    group = mini_pairs_disable_group,
+    pattern = { 'help', 'markdown', 'gitcommit', 'text' },
+    callback = function(event)
+        vim.b.minipairs_disable = true
+
+        local disabled_keys = { '(', '[', '{', '"', "'", '`' }
+        for _, key in ipairs(disabled_keys) do
+            vim.keymap.set('i', key, key, { buffer = event.buf, nowait = true })
+        end
+    end
 })
