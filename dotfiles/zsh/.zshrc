@@ -3,6 +3,9 @@ zmodload zsh/datetime
 zmodload zsh/complist
 typeset -F START_TIME=$EPOCHREALTIME
 
+# Debug startup
+# zmodload zsh/zprof
+
 # Setup autocomplete
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
@@ -40,6 +43,11 @@ export PATH="${HOME}/.cargo/bin:${PATH}"    # Rust
 export PATH="$HOME/.opencode/bin:$PATH"     # Opencode
 export GOPATH="$HOME/.local/share/go"       # Configure golang's PATH
 export GPG_TTY=$TTY                         # Configure GPG terminal path
+unity() {                                   # Unity CLI 
+    unset -f unity
+    . "/Users/user/.unity/env"
+    unity "$@"
+}
 
 fpath+=("$STACK_LOG_BREW_PREFIX/share/zsh/site-functions") # Cleaned up brew prefix logic
 
@@ -71,3 +79,6 @@ fi
 typeset -F END_TIME=$EPOCHREALTIME
 integer TOTAL_MS=$(( (END_TIME - START_TIME) * 1000 ))
 print -P "%F{244}⚡ Shell initialized in ${TOTAL_MS}ms%f"
+
+# Debug startup
+# zprof
