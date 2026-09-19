@@ -26,25 +26,26 @@ return {
     { "nvim-mini/mini.bufremove", version = "*", opts = {} },
     { "nvim-mini/mini.surround", version = "*", opts = {} },
     { "nvim-mini/mini.pairs", version = "*", opts =
-        { mappings = {
-            ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\][%s,;%)%]%}]' },
-            ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\][%s,;%)%]%}]' },
-            ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\][%s,;%)%]%}]' },
-            -- ['<'] = { action = 'open', pair = '<>', neigh_pattern = '[^\\][%s,;%}%]%}]' },
+            { mappings = {
+                ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\][%s,;%)%]%}]' },
+                ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\][%s,;%)%]%}]' },
+                ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\][%s,;%)%]%}]' },
+                -- ['<'] = { action = 'open', pair = '<>', neigh_pattern = '[^\\][%s,;%}%]%}]' },
 
-            [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
-            [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },
-            ['}'] = { action = 'close', pair = '{}', neigh_pattern = '[^\\].' },
-            ['>'] = { action = 'close', pair = '<>', neigh_pattern = '[^\\].' },
+                [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
+                [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },
+                ['}'] = { action = 'close', pair = '{}', neigh_pattern = '[^\\].' },
+                ['>'] = { action = 'close', pair = '<>', neigh_pattern = '[^\\].' },
 
 
-            ['"'] = { action = 'closeopen', pair = '""', neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
-            ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
-            ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
-        },
-    }
-},
-{ "nvim-mini/mini.indentscope", version = "*", opts = {} },
--- { "nvim-mini/mini.trailspace", version = "*", opts = {} },
--- { "nvim-mini/mini.notify", version = "*", opts = {} },
+                ['"'] = { action = 'closeopen', pair = '""', neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
+                ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
+                ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
+            },
+        }
+    },
+    { "windwp/nvim-ts-autotag", opts = {} },
+    { "nvim-mini/mini.indentscope", version = "*", opts = {} },
+    -- { "nvim-mini/mini.trailspace", version = "*", opts = {} },
+    -- { "nvim-mini/mini.notify", version = "*", opts = {} },
 }

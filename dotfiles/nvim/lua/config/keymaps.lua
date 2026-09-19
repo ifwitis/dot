@@ -47,7 +47,7 @@ end
 
 -- Remap Redo to Leader+U
 map('n', '<leader>u', '<C-r>', { desc = "Redo" })
--- Remap Backspace to Delete 
+-- Remap Backspace to Delete
 map('n', '<BS>', function()
     local line_len = string.len(vim.api.nvim_get_current_line())
     local col = vim.fn.col('.')
@@ -75,7 +75,7 @@ map('n', '<leader>rh', '<cmd>noh<CR>', { desc = "Remove highlighting" })
 map('n', '<leader>qa', '<cmd>wqa<CR>', { desc = "Save all and quit" })
 map('n', '<leader>qq', '<cmd>qa!<CR>', { desc = "Force quit all" })
 map('n', '<leader>qw', '<cmd>w<CR><cmd>lua vim.notify("Buffer saved!")<CR>', { desc = "Save buffer" })
-map('n', '<leader>qc', '<cmd>wq<CR>', { desc = "Save and quit buffer" })
+map('n', '<leader>qe', '<cmd>wq<CR>', { desc = "Save and quit buffer" })
 
 ------------------------------------------------------
 ---------------- Window Navigation -------------------
@@ -133,7 +133,7 @@ end, { desc = "Close floating windows" })
 ------------------------------------------------------
 
 -- Select All, then return to original cursor position
-map({'n', 'v'}, '<C-a>', function()
+map({ 'n', 'v' }, '<C-a>', function()
     local mode = vim.api.nvim_get_mode()["mode"]
     local current_pos = vim.fn.getpos('.')
     vim.cmd('normal! ggVGg$')
@@ -141,7 +141,7 @@ map({'n', 'v'}, '<C-a>', function()
         buffer = 0,
         once = true,
         callback = function()
-            vim.schedule(function ()
+            vim.schedule(function()
                 vim.fn.setpos('.', current_pos)
                 if mode == 'i' then
                     -- TO-DO: Pressing another key like y to yank, or = to indent doesn't return to insert properly
@@ -225,31 +225,31 @@ map("i", "<Tab>", function()
 end, { expr = true, desc = "Smart indent" })
 
 -- Delete word
-map("i", "<M-BS>", "<C-w>", { desc = "Delete word backward" })     -- Option/Alt + Backspace
+map("i", "<M-BS>", "<C-w>", { desc = "Delete word backward" }) -- Option/Alt + Backspace
 
 -- Selection
-map({ "n", "i" }, "<S-Left>", "<Esc>v",  { desc = "Start line selection left" })        -- Shift + Left
-map({ "n", "i" }, "<S-Right>", "<Esc>lv", { desc = "Start line selection right" })      -- Shift + Right
-map({ "n", "i" }, "<S-Up>", "<Esc>lvk", { desc = "Start line selection up" })           -- Shift + Up
-map({ "n", "i" }, "<S-Down>", "<Esc>vj", { desc = "Start line selection down" })        -- Shift + Down
+map({ "n", "i" }, "<S-Left>", "<Esc>v", { desc = "Start line selection left" })    -- Shift + Left
+map({ "n", "i" }, "<S-Right>", "<Esc>lv", { desc = "Start line selection right" }) -- Shift + Right
+map({ "n", "i" }, "<S-Up>", "<Esc>lvk", { desc = "Start line selection up" })      -- Shift + Up
+map({ "n", "i" }, "<S-Down>", "<Esc>vj", { desc = "Start line selection down" })   -- Shift + Down
 
 -- Undo/Redo
 -- (Mac)
-map("i", "<D-z>", "<C-o>u", { desc = "Undo" })          -- CMD + Z
-map("i", "<D-S-z>", "<C-o><C-r>", { desc = "Redo" })    -- CMD + SHIFT + Z
-map("i", "<D-y>", "<C-o><C-r>", { desc = "Redo" })      -- CMD + Y
+map("i", "<D-z>", "<C-o>u", { desc = "Undo" })       -- CMD + Z
+map("i", "<D-S-z>", "<C-o><C-r>", { desc = "Redo" }) -- CMD + SHIFT + Z
+map("i", "<D-y>", "<C-o><C-r>", { desc = "Redo" })   -- CMD + Y
 ---
-map("n", "<D-z>", "u", { desc = "Undo" })          -- CMD + Z
-map("n", "<D-S-z>", "<C-r>", { desc = "Redo" })    -- CMD + SHIFT + Z
-map("n", "<D-y>", "<C-r>", { desc = "Redo" })      -- CMD + Y
+map("n", "<D-z>", "u", { desc = "Undo" })            -- CMD + Z
+map("n", "<D-S-z>", "<C-r>", { desc = "Redo" })      -- CMD + SHIFT + Z
+map("n", "<D-y>", "<C-r>", { desc = "Redo" })        -- CMD + Y
 -- (Windows/General)
-map("i", "<C-z>", "<C-o>u", { desc = "Undo" })          -- CTRL + Z
-map("i", "<C-S-z>", "<C-o><C-r>", { desc = "Redo" })    -- CTRL + SHIFT + Z
-map("i", "<C-y>", "<C-o><C-r>", { desc = "Redo" })      -- CTRL + Y
+map("i", "<C-z>", "<C-o>u", { desc = "Undo" })       -- CTRL + Z
+map("i", "<C-S-z>", "<C-o><C-r>", { desc = "Redo" }) -- CTRL + SHIFT + Z
+map("i", "<C-y>", "<C-o><C-r>", { desc = "Redo" })   -- CTRL + Y
 ---
-map("n", "<C-z>", "u", { desc = "Undo" })          -- CTRL + Z
-map("n", "<C-S-z>", "<C-r>", { desc = "Redo" })    -- CTRL + SHIFT + Z
-map("n", "<C-y>", "<C-r>", { desc = "Redo" })      -- CTRL + Y
+map("n", "<C-z>", "u", { desc = "Undo" })            -- CTRL + Z
+map("n", "<C-S-z>", "<C-r>", { desc = "Redo" })      -- CTRL + SHIFT + Z
+map("n", "<C-y>", "<C-r>", { desc = "Redo" })        -- CTRL + Y
 
 
 ------------------------------------------------------
@@ -327,104 +327,112 @@ end, { desc = "Safe Fine Cmdline Switch" })
 
 
 -- ======================================================================
--- Mkdnflow 
+-- Mkdnflow
 -- ======================================================================
 --
 -- Helper function to check if the cursor is before the first actual text word
 -- local function cursor_is_before_text()
-    --     local line = vim.api.nvim_get_current_line()
-    --     local col = vim.api.nvim_win_get_cursor(0)[2] -- 0-indexed column
-    --
-    --     -- Find the index of the first character that is NOT a space, tab, -, *, +, or digit/dot
-    --     local text_start = line:find("[^%s%-%*%+%.%d]")
-    --     vim.print(text_start)
-    --     if not text_start then
-    --         -- If the line only contains spaces or list markers, allow tabbing anywhere
-    --         return true
-    --     end
-    --
-    --     -- Lua string indices are 1-based, Neovim cursor column is 0-based
-    --     return col < (text_start - 1)
-    -- end
+--     local line = vim.api.nvim_get_current_line()
+--     local col = vim.api.nvim_win_get_cursor(0)[2] -- 0-indexed column
+--
+--     -- Find the index of the first character that is NOT a space, tab, -, *, +, or digit/dot
+--     local text_start = line:find("[^%s%-%*%+%.%d]")
+--     vim.print(text_start)
+--     if not text_start then
+--         -- If the line only contains spaces or list markers, allow tabbing anywhere
+--         return true
+--     end
+--
+--     -- Lua string indices are 1-based, Neovim cursor column is 0-based
+--     return col < (text_start - 1)
+-- end
 
-    -- ENTER/<CR>: Go to the navigation link in a Markdown file
-    vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "markdown", "rmd" },
-        callback = function()
-            map('n', '<CR>', '<Cmd>MkdnEnter<CR>', {
-                buffer = true,
-                desc = 'Mkdn enter'
-            })
-        end,
-    })
+-- ENTER/<CR>: Go to the navigation link in a Markdown file
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "rmd" },
+    callback = function()
+        map('n', '<CR>', '<Cmd>MkdnEnter<CR>', {
+            buffer = true,
+            desc = 'Mkdn enter'
+        })
+    end,
+})
 
-    -- ENTER: Create a new list item
-    vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "markdown", "rmd" },
-        callback = function()
-            map('i', '<CR>', '<cmd>MkdnNewListItem<CR>', {
-                buffer = true,
-                desc = "Auto-continue markdown list items"
-            })
-        end
-    })
+-- ENTER: Create a new list item
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "rmd" },
+    callback = function()
+        map('i', '<CR>', '<cmd>MkdnNewListItem<CR>', {
+            buffer = true,
+            desc = "Auto-continue markdown list items"
+        })
+    end
+})
 
-    -- TAB/SHIFT+TAB: Smart list indenting
-    -- vim.api.nvim_create_autocmd("FileType", {
-        --     pattern = { "markdown", "rmd" },
-        --     callback = function()
-            --         map('i', '<Tab>', function()
-                --             if cursor_is_before_text() then
-                --                 vim.cmd("MkdnIndentListItem")
-                --             else
-                --                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "n", true)
-                --             end
-                --         end, { desc = "Smart shift right"})
-                --
-                --
-                --         map('i', '<S-Tab>', function()
-                    --             if cursor_is_before_text() then
-                    --                 vim.cmd("MkdnDedentListItem")
-                    --             else
-                    --                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<S-Tab>", true, true, true), "n", true)
-                    --             end
-                    --         end, { desc = "Smart shift left"})
-                    --     end
-                    -- })
-
-
-                    -- ======================================================================
-                    -- Blink.cmp 
-                    -- ======================================================================
-
-                    -- Find blink keymaps in ../plugins/blink.cmp
-                    -- <Leader>e for showing autocomplete/documentation
-
-                    -- ======================================================================
-                    -- Telescope 
-                    -- ======================================================================
-
-                    -- Defaults
-                    map('n', '<leader><leader><leader>', function() require('telescope.builtin').find_files() end, { desc = 'Telescope find files' })
-                    map('n', '<leader>fg', function() require('telescope.builtin').live_grep() end, { desc = 'Telescope live grep' })
+-- TAB/SHIFT+TAB: Smart list indenting
+-- vim.api.nvim_create_autocmd("FileType", {
+--     pattern = { "markdown", "rmd" },
+--     callback = function()
+--         map('i', '<Tab>', function()
+--             if cursor_is_before_text() then
+--                 vim.cmd("MkdnIndentListItem")
+--             else
+--                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "n", true)
+--             end
+--         end, { desc = "Smart shift right"})
+--
+--
+--         map('i', '<S-Tab>', function()
+--             if cursor_is_before_text() then
+--                 vim.cmd("MkdnDedentListItem")
+--             else
+--                 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<S-Tab>", true, true, true), "n", true)
+--             end
+--         end, { desc = "Smart shift left"})
+--     end
+-- })
 
 
-                    -- ======================================================================
-                    -- Nvim Tree 
-                    -- ======================================================================
+-- ======================================================================
+-- Blink.cmp
+-- ======================================================================
 
-                    -- Defaults
-                    map('n', '<leader>tr', "<cmd>NvimTreeToggle<CR>", { desc = "Toggle File tree" })
-                    map('n', '<leader>rt', "<cmd>NvimTreeFocus<CR>", { desc = "Toggle File tree focus" })
+-- Find blink keymaps in ../plugins/blink.cmp
+-- <Leader>e for showing autocomplete/documentation
 
-                    -- ======================================================================
-                    -- Mason 
-                    -- ======================================================================
+-- ======================================================================
+-- Telescope
+-- ======================================================================
 
-                    -- Defaults
-                    map('n', '<leader>m', "<cmd>Mason<CR>", { desc = "Open Mason LSP Manager" })
+-- Defaults
+map('n', '<leader><leader><leader>', function() require('telescope.builtin').find_files() end,
+    { desc = 'Telescope find files' })
+map('n', '<leader>fg', function() require('telescope.builtin').live_grep() end, { desc = 'Telescope live grep' })
 
 
-                    -- ======================================================================
-                    -- Multicursor 
-                    -- =======================================================================y=
+-- ======================================================================
+-- Nvim Tree
+-- ======================================================================
+
+-- Defaults
+map('n', '<leader>tr', "<cmd>NvimTreeToggle<CR>", { desc = "Toggle File tree" })
+map('n', '<leader>rt', "<cmd>NvimTreeFocus<CR>", { desc = "Toggle File tree focus" })
+
+-- ======================================================================
+-- Mason
+-- ======================================================================
+
+-- Defaults
+map('n', '<leader>m', "<cmd>Mason<CR>", { desc = "Open Mason LSP Manager" })
+
+-- ======================================================================
+-- Noice / Nvim-notify
+-- ======================================================================
+
+map('n', 'Esc', function()
+    require("notify").dismiss({ pending = true, silent = true })
+end, { desc = "Dismiss all notifications" })
+
+-- ======================================================================
+-- Multicursor
+-- =======================================================================y=
