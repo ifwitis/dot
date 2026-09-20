@@ -10,6 +10,9 @@ return {
             view_history = "messages",
             view_search = false,
         },
+        messages = {
+            view_search = "mini",
+        }
     },
     dependencies = {
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
