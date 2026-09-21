@@ -143,7 +143,7 @@ return {
 
                 draw = {
                     -- Aligns the keyword you've typed to a component in the menu
-                    align_to = 'cursor', -- 'label', none', or 'cursor' 
+                    align_to = 'label', -- 'label', none', or 'cursor' 
                     -- Left and right padding, optionally { left, right } for different padding on each side
                     padding = 1,
                     -- Gap between columns
