@@ -4,7 +4,7 @@ zmodload zsh/complist
 typeset -F START_TIME=$EPOCHREALTIME
 
 # Debug startup
-# zmodload zsh/zprof
+zmodload zsh/zprof
 
 # Setup autocomplete
 autoload -Uz compinit
@@ -36,20 +36,23 @@ fi
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/libexec"
 
 # Append additional tools
+export PATH="/${HOME}/.local/bin:${PATH}"   # uv package manager
 export PATH="/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages:${PATH}" # Python
 export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:${PATH}"
 export PATH="/opt/homebrew/bin:${PATH}"     # Homebrew packages
+export PATH="/opt/podman/bin:${PATH}"       # Podman
+export PATH="${HOME}/.bun/bin:${PATH}"      # Bun 
 export PATH="${HOME}/.cargo/bin:${PATH}"    # Rust 
-export PATH="$HOME/.opencode/bin:$PATH"     # Opencode
-export GOPATH="$HOME/.local/share/go"       # Configure golang's PATH
+export PATH="/Library/TeX/texbin:${PATH}"   # MacTeX CLI
+export PATH="${HOME}/.opencode/bin:${PATH}" # Opencode
+export PATH="${HOME}/.juliaup/bin:${PATH}"  # Julia 
+export GOPATH="${HOME}/.local/share/go"     # Configure golang's PATH
 export GPG_TTY=$TTY                         # Configure GPG terminal path
 unity() {                                   # Unity CLI 
     unset -f unity
     . "/Users/user/.unity/env"
     unity "$@"
 }
-
-fpath+=("$STACK_LOG_BREW_PREFIX/share/zsh/site-functions") # Cleaned up brew prefix logic
 
 # Tmux
 bindkey -r "^[/"    # Unbind /
@@ -81,4 +84,5 @@ integer TOTAL_MS=$(( (END_TIME - START_TIME) * 1000 ))
 print -P "%F{244}⚡ Shell initialized in ${TOTAL_MS}ms%f"
 
 # Debug startup
-# zprof
+zprof
+
