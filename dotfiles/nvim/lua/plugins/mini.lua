@@ -36,7 +36,6 @@ return {
                 ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\][%s,;%)%]%}]' },
                 ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\][%s,;%)%]%}]' },
                 ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\][%s,;%)%]%}]' },
-                ['<'] = { action = 'open', pair = '<>', neigh_pattern = '[^\\][%s,;%}%]%}]' },
 
                 [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
                 [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },

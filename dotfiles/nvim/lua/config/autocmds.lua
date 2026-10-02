@@ -135,3 +135,15 @@ autocmd('FileType', {
         end
     end
 })
+local mini_pairs_enable_group = augroup("MiniPairsEnableGroup", { clear = true })
+autocmd('FileType', {
+    group = mini_pairs_enable_group,
+    pattern = { 'html' },
+    callback = function(args)
+        require('mini.pairs').map_buf(args.buf, 'i', '<', {
+            action = 'open',
+            pair = '<>',
+            neigh_pattern = '[^\\][%s,;>%}%]%}]',
+        })
+    end,
+})
