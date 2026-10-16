@@ -1,15 +1,28 @@
 return {
     {
         "OXY2DEV/markview.nvim",
-        lazy = false,
-        config = {}
+        ft = { 'markdown' },
+        lazy = true,
+        config = function()
+            local presets = require("markview.presets")
+            require("markview").setup({
+                require("markview").setup({
+                    modes = { "n", "no", "c" },
+                    hybrid_modes = { "n" },
+                    markdown = {
+                        tables = presets.tables.rounded,
+                        horizontal_rules = presets.horizontal_rules.arrowed,
+                        headings = presets.headings.glow,
+                        block_quotes = presets.block_quotes.obsidian,
+                    },
+                })
+            })
+        end
     },
     {
         'jakewvincent/mkdnflow.nvim',
         ft = { 'markdown', 'rmd' },
-        opts = {
-            mappings = false
-        },
+        lazy = true,
         config = function()
             require('mkdnflow').setup({
                 modules = {

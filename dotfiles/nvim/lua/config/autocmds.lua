@@ -147,3 +147,16 @@ autocmd('FileType', {
         })
     end,
 })
+
+
+-----------------------------------------------------------
+-- Markview
+-----------------------------------------------------------
+local mkview_group = augroup("MarkviewGroup", { clear = true})
+autocmd("FileType", {
+    pattern = { "markdown", "rmd" },
+    group = mkview_group,
+    callback = function()
+        vim.opt_local.wrap = false
+    end,
+})

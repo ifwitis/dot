@@ -67,6 +67,9 @@ end, { expr = true, desc = "Delete prev character without copying" })
 -- Remove highlighting
 map('n', '<leader>rh', '<cmd>noh<CR>', { desc = "Remove highlighting" })
 
+-- Toggle line wrapping
+map('n', '<leader>wr', '<cmd>set wrap!<CR>', { desc = "Toggle line wrapping" })
+
 ------------------------------------------------------
 ------------------ Open / Closing --------------------
 ------------------------------------------------------
