@@ -49,15 +49,15 @@ end
 map('n', '<leader>u', '<C-r>', { desc = "Redo" })
 -- Remap Backspace to Delete
 map('n', '<BS>', function()
-    local line_len = string.len(vim.api.nvim_get_current_line())
-    local col = vim.fn.col('.')
-    if line_len == 0 then
-        return 'i<BS><Esc>'
-    elseif col == line_len then
-        return '"_x'
-    else
-        return '"_<S-x>'
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+
+    if col == 0 then
+        -- At beginning of line: join with previous line
+        return row > 1 and 'kgJ' or '<Nop>'
     end
+
+    -- Delete character under cursor without yanking
+    return '"_x'
 end, { expr = true, desc = "Delete prev character without copying" })
 
 ------------------------------------------------------
@@ -137,25 +137,123 @@ end, { desc = "Close floating windows" })
 ------------------------------------------------------
 
 -- Select All, then return to original cursor position
-map({ 'n', 'v' }, '<C-a>', function()
-    local mode = vim.api.nvim_get_mode()["mode"]
-    local current_pos = vim.fn.getpos('.')
-    vim.cmd('normal! ggVGg$')
-    vim.api.nvim_create_autocmd('ModeChanged', {
-        buffer = 0,
-        once = true,
-        callback = function()
-            vim.schedule(function()
-                vim.fn.setpos('.', current_pos)
-                if mode == 'i' then
-                    -- TO-DO: Pressing another key like y to yank, or = to indent doesn't return to insert properly
-                    local keys = vim.api.nvim_replace_termcodes('<Esc>i', true, false, true)
-                    vim.api.nvim_feedkeys(keys, 'nV', false)
-                end
-            end)
-        end
+local api = vim.api
+local ns = api.nvim_create_namespace('select_all_restore')
+local pending_cleanup
+
+local function is_visual(mode)
+    return mode == 'v' or mode == 'V' or mode == '\22'
+end
+
+map({ 'n', 'v', 'i' }, '<C-a>', function()
+    -- Clear any previous unfinished selection tracking
+    if pending_cleanup then
+        pending_cleanup()
+    end
+
+    local original_mode = api.nvim_get_mode().mode
+    local was_insert = original_mode:sub(1, 1) == 'i'
+    local win = api.nvim_get_current_win()
+    local buf = api.nvim_get_current_buf()
+    local row, col = unpack(api.nvim_win_get_cursor(win))
+
+    -- Extmark follows the cursor position through text edits
+    local mark = api.nvim_buf_set_extmark(buf, ns, row - 1, col, {
+        right_gravity = true,
     })
-end, { desc = "Select all, and return" })
+
+    local autocmd_id
+    local cleanup
+
+    cleanup = function()
+        if autocmd_id then
+            pcall(api.nvim_del_autocmd, autocmd_id)
+        end
+        if api.nvim_buf_is_valid(buf) then
+            pcall(api.nvim_buf_del_extmark, buf, ns, mark)
+        end
+        if pending_cleanup == cleanup then
+            pending_cleanup = nil
+        end
+    end
+
+    pending_cleanup = cleanup
+
+    local entered_visual = false
+
+    autocmd_id = api.nvim_create_autocmd('ModeChanged', {
+        callback = function()
+            local old = vim.v.event.old_mode
+            local new = vim.v.event.new_mode
+
+            -- Ignore transitions until Select All has entered Visual mode
+            if not entered_visual then
+                entered_visual = is_visual(new)
+                return
+            end
+
+            -- Restore only after leaving Visual mode
+            if not is_visual(old) or is_visual(new) then
+                return
+            end
+
+            api.nvim_del_autocmd(autocmd_id)
+            autocmd_id = nil
+
+            local function restore()
+                if not api.nvim_win_is_valid(win)
+                    or not api.nvim_buf_is_valid(buf)
+                    or api.nvim_win_get_buf(win) ~= buf
+                    or api.nvim_get_current_win() ~= win then
+                    cleanup()
+                    return
+                end
+
+                local pos = api.nvim_buf_get_extmark_by_id(buf, ns, mark, {})
+                cleanup()
+
+                if #pos == 0 then
+                    return
+                end
+
+                local target_row = pos[1] + 1
+                local target_col = pos[2]
+                local line = api.nvim_buf_get_lines(
+                    buf, target_row - 1, target_row, false
+                )[1] or ''
+
+                target_col = math.min(target_col, #line)
+
+                api.nvim_win_set_cursor(win, { target_row, target_col })
+
+                -- Return to Insert mode at the correct insertion position
+                if was_insert then
+                    if target_col == #line and #line > 0 then
+                        vim.cmd('startinsert!')
+                    else
+                        vim.cmd('startinsert')
+                    end
+                end
+            end
+
+            -- Let the Visual operation finish before restoring the cursor
+            if new:sub(1, 1) == 'c' then
+                api.nvim_create_autocmd('CmdlineLeave', {
+                    once = true,
+                    callback = function()
+                        vim.schedule(restore)
+                    end,
+                })
+            else
+                vim.schedule(restore)
+            end
+        end,
+    })
+
+    -- Exit current mode, select every line including the final line
+    local keys = api.nvim_replace_termcodes('<Esc>ggVG', true, false, true)
+    api.nvim_feedkeys(keys, 'n', false)
+end, { desc = "Select all and restore cursor/mode" })
 
 -- Line Moving
 -- map('v', 'J', ":m '>+1<CR>gv=gv", { desc = "Move line down"}) -- Visual > J to move line up one
