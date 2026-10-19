@@ -7,6 +7,7 @@ typeset -F START_TIME=$EPOCHREALTIME
 zmodload zsh/zprof
 
 # Setup autocomplete
+fpath=(${(uo)fpath})
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
     compinit
@@ -65,9 +66,10 @@ nvm() {
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   nvm "$@"
 }
-node() { unset -f nvm node npm npx corepack; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; node "$@"; }
-npm() { unset -f nvm node npm npx corepack; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npm "$@"; }
-npx() { unset -f nvm node npm npx corepack; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npx "$@"; }
+node() { unset -f nvm node npm npx corepack 2>/dev/null; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; node "$@"; }
+npm() { unset -f nvm node npm npx corepack 2>/dev/null; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npm "$@"; }
+npx() { unset -f nvm node npm npx corepack 2>/dev/null; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npx "$@"; }
+corepack() { unset -f nvm node npm npx corepack 2>/dev/null; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; corepack "$@"; }
 
 # Configure TMUX session terminal history to exist independently
 if [ -n "$TMUX" ]; then
