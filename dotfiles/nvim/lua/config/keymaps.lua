@@ -45,6 +45,18 @@ end
 -- =========================== GENERAL KEYMAPS ===========================
 -- =======================================================================
 
+-- Toggle indent size
+map("n", "<leader>ti", function()
+  local width = vim.bo.shiftwidth == 2 and 4 or 2
+
+  vim.bo.tabstop = width
+  vim.bo.shiftwidth = width
+  vim.bo.softtabstop = width
+  vim.bo.expandtab = true
+
+  vim.notify("Indentation changed: " .. width .. " spaces")
+end, { desc = "Toggle indentation size (2, 4)" })
+
 -- Remap Redo to Leader+U
 map('n', '<leader>u', '<C-r>', { desc = "Redo" })
 -- Remap Backspace to Delete

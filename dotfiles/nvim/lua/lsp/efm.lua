@@ -20,30 +20,30 @@ local yamllint = require("efmls-configs.linters.yamllint")           -- yaml lin
 
 -- Non-supported Linters and Formatters configurations
 local csharpier = {
-    formatCommand = 'csharpier --write-stdout',
+    formatCommand = "csharpier --write-stdout",
     formatStdin = true,
 }
 
 M.tools = {
     -- efmls-config supported
-    'selene',
-    'stylua',
-    'flake8',
-    'black',
-    'golangci-lint',
-    'gofumpt',
-    'prettierd',
-    'eslint_d',
-    'cpplint',
-    'fixjson',
-    'shellcheck',
-    'shfmt',
-    'hadolint',
-    'clang-format',
-    'cmakelint',
-    'yamllint',
+    -- "selene",
+    -- "stylua",
+    "flake8",
+    "black",
+    "golangci-lint",
+    "gofumpt",
+    "prettierd",
+    "eslint_d",
+    "cpplint",
+    "fixjson",
+    "shellcheck",
+    "shfmt",
+    "hadolint",
+    "clang-format",
+    "cmakelint",
+    "yamllint",
     -- efmls-config non-supported
-    'csharpier',
+    "csharpier",
 }
 
 -- Language Configurations for EFM Language Server
@@ -54,15 +54,15 @@ local languages = {
     cs = { csharpier },
     css = { prettier_d },
     docker = { hadolint, prettier_d },
-    cmake = { cmakelint, },
-    yaml = { yamllint, },
+    cmake = { cmakelint },
+    yaml = { yamllint },
     go = { golint, gofumpt },
     html = { prettier_d },
     javascript = { eslint_d, prettier_d },
     javascriptreact = { eslint_d, prettier_d },
     json = { eslint_d, fixjson },
     jsonc = { eslint_d, fixjson },
-    lua = { selene, stylua },
+    -- lua = { selene, stylua },
     markdown = { prettier_d },
     python = { flake8, black },
     sh = { shellcheck, shfmt },
@@ -75,11 +75,12 @@ local languages = {
 local filetypes = vim.tbl_keys(languages)
 
 M.config = {
-    cmd = { 'efm-langserver' },
+    cmd = { "efm-langserver" },
     filetypes = filetypes,
-    root_markers = { '.git' },
+    root_markers = { ".git" },
     settings = {
         languages = languages,
+        rootMarkers = { ".git/" },
     },
     init_options = {
         documentFormatting = true,
