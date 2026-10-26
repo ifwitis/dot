@@ -1,5 +1,8 @@
+Fixes:
+Indentation not working in Markdown for list items without text (e.g. " - [empty]")
+
+Features:
 - remove nvim-tree
 - multiple cursors
 - buffer tabs
 - yazi integration
-- setup latex plugin

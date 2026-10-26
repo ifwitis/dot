@@ -1,5 +1,11 @@
 return {
     {
+        "brianhuster/live-preview.nvim",
+        ft = { "markdown", "html", "svg" },
+        opts = {},
+        cmd = { "LivePreview" },
+    },
+    {
         "OXY2DEV/markview.nvim",
         ft = { 'markdown' },
         lazy = true,
