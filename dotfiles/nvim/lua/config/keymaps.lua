@@ -234,26 +234,27 @@ map({ 'n', 'v', 'i' }, '<C-a>', function()
                     return
                 end
 
-                local target_row = pos[1] + 1
-                local target_col = pos[2]
+                -- Clamp row to the current buffer after deletions.
+                local line_count = api.nvim_buf_line_count(buf)
+                local target_row = math.max(1, math.min(pos[1] + 1, line_count))
+
                 local line = api.nvim_buf_get_lines(
                     buf, target_row - 1, target_row, false
-                )[1] or ''
+                )[1] or ""
 
-                target_col = math.min(target_col, #line)
+                -- Clamp column to the current line.
+                local target_col = math.max(0, math.min(pos[2], #line))
 
                 api.nvim_win_set_cursor(win, { target_row, target_col })
 
-                -- Return to Insert mode at the correct insertion position
                 if was_insert then
                     if target_col == #line and #line > 0 then
-                        vim.cmd('startinsert!')
+                        vim.cmd("startinsert!")
                     else
-                        vim.cmd('startinsert')
+                        vim.cmd("startinsert")
                     end
                 end
             end
-
             -- Let the Visual operation finish before restoring the cursor
             if new:sub(1, 1) == 'c' then
                 api.nvim_create_autocmd('CmdlineLeave', {
