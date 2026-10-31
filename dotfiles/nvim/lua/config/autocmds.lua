@@ -117,7 +117,6 @@ autocmd("ColorScheme", {
     end,
 })
 
-
 -----------------------------------------------------------
 -- Mini
 -----------------------------------------------------------
@@ -152,7 +151,7 @@ autocmd('FileType', {
 -----------------------------------------------------------
 -- Markview
 -----------------------------------------------------------
-local mkview_group = augroup("MarkviewGroup", { clear = true})
+local mkview_group = augroup("MarkviewGroup", { clear = true })
 autocmd("FileType", {
     pattern = { "markdown", "rmd" },
     group = mkview_group,

@@ -1,17 +1,18 @@
 return {
     -- Theme Installation
-    { "folke/tokyonight.nvim",          lazy = false, priority = 1000 },
-    { "catppuccin/nvim", name = 'catppuccin', lazy = false, priority = 1000 },
-    { "EdenEast/nightfox.nvim",         lazy = false, priority = 1000 },
-    { "everviolet/nvim", name = 'evergarden', lazy = false, priority = 1000 },
-    { "sainnhe/everforest",             lazy = false, priority = 1000 },
-    { "zenbones-theme/zenbones.nvim",   lazy = false, priority = 1000 },
-    { "stevedylandev/compline-nvim",    lazy = false, priority = 1000 },
+    { "folke/tokyonight.nvim",        lazy = false,        priority = 1000 },
+    { "catppuccin/nvim",              name = 'catppuccin', lazy = false,   priority = 1000 },
+    { "EdenEast/nightfox.nvim",       lazy = false,        priority = 1000 },
+    { "everviolet/nvim",              name = 'evergarden', lazy = false,   priority = 1000 },
+    { "sainnhe/everforest",           lazy = false,        priority = 1000 },
+    { "zenbones-theme/zenbones.nvim", lazy = false,        priority = 1000 },
+    { "stevedylandev/compline-nvim",  lazy = false,        priority = 1000 },
 
     -- Theme Manager
     {
         "zaldih/themery.nvim",
         lazy = false,
+        priorty = 1000,
         config = function()
             require("themery").setup({
                 themes = {

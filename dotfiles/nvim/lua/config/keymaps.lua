@@ -47,14 +47,14 @@ end
 
 -- Toggle indent size
 map("n", "<leader>ti", function()
-  local width = vim.bo.shiftwidth == 2 and 4 or 2
+    local width = vim.bo.shiftwidth == 2 and 4 or 2
 
-  vim.bo.tabstop = width
-  vim.bo.shiftwidth = width
-  vim.bo.softtabstop = width
-  vim.bo.expandtab = true
+    vim.bo.tabstop = width
+    vim.bo.shiftwidth = width
+    vim.bo.softtabstop = width
+    vim.bo.expandtab = true
 
-  vim.notify("Indentation changed: " .. width .. " spaces")
+    vim.notify("Indentation changed: " .. width .. " spaces")
 end, { desc = "Toggle indentation size (2, 4)" })
 
 -- Remap Redo to Leader+U
@@ -130,9 +130,15 @@ map('n', '<S-j>', '5jzz', { desc = "Scroll down faster" })
 ------------------------------------------------------
 
 -- Buffer navigation
+map('n', '<leader>bb', '<C-^>', { desc = "Alternate buffer" })
 map('n', '<leader>bn', '<cmd>bnext<CR>', { desc = "Next buffer" })
 map('n', '<leader>bp', '<cmd>bprevious<CR>', { desc = "Previous buffer" })
 map('n', '<leader>bd', '<cmd>bdelete!<CR>', { desc = "Close buffer" })
+for i = 1, 9 do
+    map("n", "<leader>b" .. i, function()
+        vim.cmd("buffer " .. i)
+    end, { desc = "Go to buffer " .. i })
+end
 
 -- Close floating buffers / windows
 map("n", "<Esc>", function()
