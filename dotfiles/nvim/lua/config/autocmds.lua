@@ -117,6 +117,20 @@ autocmd("ColorScheme", {
     end,
 })
 
+autocmd("VimEnter", {
+    once = true,
+    callback = function()
+        vim.schedule(function()
+            local themery = require("themery")
+            local current = themery.getCurrentTheme()
+
+            if current then
+                themery.setThemeByName(current.name, false)
+            end
+        end)
+    end,
+})
+
 -----------------------------------------------------------
 -- Mini
 -----------------------------------------------------------

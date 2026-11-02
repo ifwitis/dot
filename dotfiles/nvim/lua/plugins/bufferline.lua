@@ -14,18 +14,5 @@ return {
                 always_show_bufferline = true,
             }
         })
-        vim.api.nvim_create_autocmd("VimEnter", {
-            once = true,
-            callback = function()
-                vim.schedule(function()
-                    local themery = require("themery")
-                    local current = themery.getCurrentTheme()
-
-                    if current then
-                        themery.setThemeByName(current.name, false)
-                    end
-                end)
-            end,
-        })
     end,
 }
