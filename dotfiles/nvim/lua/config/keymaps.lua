@@ -556,6 +556,14 @@ map('n', '<leader>m', "<cmd>Mason<CR>", { desc = "Open Mason LSP Manager" })
 -- Noice / Nvim-notify
 -- ======================================================================
 
+map('n', '<leader>nm', '<cmd>Noice last<cr>', {
+    desc = 'Show last message',
+})
+
+map('n', '<leader>nh', '<cmd>Noice all<cr>', {
+    desc = 'Show message history',
+})
+
 map('n', 'Esc', function()
     require("notify").dismiss({ pending = true, silent = true })
 end, { desc = "Dismiss all notifications" })

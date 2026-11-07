@@ -145,16 +145,16 @@ return {
                         colorscheme = "dayfox",
                     },
                     {
-                        name = "Tokyo Day",
-                        colorscheme = "tokyonight-day",
-                    },
-                    {
                         name = "Everlight",
                         colorscheme = "everforest",
                         before = [[
                         vim.o.background = "light"
                         vim.g.everforest_background = "soft"
                         ]],
+                    },
+                    {
+                        name = "Tokyo Day",
+                        colorscheme = "tokyonight-day",
                     },
                 },
                 livePreview = true,

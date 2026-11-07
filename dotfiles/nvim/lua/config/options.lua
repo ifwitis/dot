@@ -7,6 +7,7 @@
 -- [2] Defaults - *nvim-defaults*
 
 local o = vim.o       -- Set options
+local opt = vim.opt
 
 -----------------------------------------------------------
 -- General
@@ -17,6 +18,7 @@ o.cursorline = true                 -- Highlight current line
 o.cursorlineopt = "number"          -- Highlight current line number
 o.swapfile = false                  -- Don't use swapfile
 o.completeopt = 'menuone,noinsert,noselect'  -- Autocomplete options
+opt.path:append("./")               -- Make directories relative
 
 -----------------------------------------------------------
 -- Neovim UI

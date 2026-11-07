@@ -138,16 +138,24 @@ autocmd("VimEnter", {
 local mini_pairs_disable_group = augroup("MiniPairsDisableGroup", { clear = true })
 autocmd('FileType', {
     group = mini_pairs_disable_group,
-    pattern = { 'help', 'markdown', 'gitcommit', 'text' },
+    pattern = { 'help', 'markdown', 'gitcommit', 'text', },
     callback = function(event)
-        vim.b.minipairs_disable = true
-
-        local disabled_keys = { '(', '[', '{', '"', "'", '`' }
+        vim.b[event.buf].minipairs_disable = true
+    end
+})
+autocmd('FileType', {
+    group = mini_pairs_disable_group,
+    pattern = { 'tex' },
+    callback = function(event)
+        local disabled_keys = { '"', "'", '`' }
         for _, key in ipairs(disabled_keys) do
-            vim.keymap.set('i', key, key, { buffer = event.buf, nowait = true })
+            vim.keymap.set('i', key, key, {
+                buffer = event.buf, nowait = true
+            })
         end
     end
 })
+
 local mini_pairs_enable_group = augroup("MiniPairsEnableGroup", { clear = true })
 autocmd('FileType', {
     group = mini_pairs_enable_group,
@@ -158,6 +166,25 @@ autocmd('FileType', {
             pair = '<>',
             neigh_pattern = '[^\\][%s,;>%}%]%}]',
         })
+    end,
+})
+autocmd('FileType', {
+    group = mini_pairs_enable_group,
+    pattern = { 'tex' },
+    callback = function(args)
+        require('mini.pairs').map_buf(args.buf, 'i', '$', {
+            action = 'closeopen',
+            pair = '$$',
+            neigh_pattern = '[^\\][%s,%$;>%}%]%}]',
+        })
+        -- disable VimTex mappings
+        vim.schedule(function()
+            if vim.api.nvim_buf_is_valid(args.buf) then
+                pcall(vim.keymap.del, 'i', ']]', {
+                    buffer = args.buf,
+                })
+            end
+        end)
     end,
 })
 
