@@ -38,8 +38,6 @@ export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/libexec"
 
 # Append additional tools
 export PATH="/${HOME}/.local/bin:${PATH}"   # uv package manager
-export PATH="/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages:${PATH}" # Python
-export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:${PATH}"
 export PATH="/opt/homebrew/bin:${PATH}"     # Homebrew packages
 export PATH="/opt/podman/bin:${PATH}"       # Podman
 export PATH="${HOME}/.bun/bin:${PATH}"      # Bun 
@@ -79,6 +77,15 @@ if [ -n "$TMUX" ]; then
   CURRENT_SESSION=$(tmux display-message -p '#S')
   export HISTFILE="$HOME/.tmux_history/history_s_${CURRENT_SESSION}"
 fi
+
+# Vim mode in terminal
+bindkey -v 
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^U' backward-kill-line
+bindkey -M viins '^[^?' backward-kill-word
+bindkey -M viins '^[^H' backward-kill-word
 
 # Startup time calculation
 typeset -F END_TIME=$EPOCHREALTIME
