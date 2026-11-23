@@ -62,7 +62,7 @@
 // Recommended values:
 //  o High DPI displays: 0.33333333
 //  - Low DPI displays:  0.66666666
-#define SCALE 0.33333333
+#define SCALE 0.5
 
 // "Tube" warp
 #define CRTS_WARP 1
@@ -73,10 +73,10 @@
 #define MIN_VIN 0.5
 
 // Try different masks
-// #define CRTS_MASK_GRILLE 1
+#define CRTS_MASK_GRILLE 1
 // #define CRTS_MASK_GRILLE_LITE 1
 // #define CRTS_MASK_NONE 1
-#define CRTS_MASK_SHADOW 1
+// #define CRTS_MASK_SHADOW 1
 
 // Scanline thinness
 //  0.50 = fused scanlines
@@ -89,13 +89,13 @@
 //  -2.5 = default
 //  -2.0 = smooth
 //  -1.0 = too blurry
-#define INPUT_BLUR -2.75
+#define INPUT_BLUR -2.0
 
 // Shadow mask effect, ranges from,
 //  0.25 = large amount of mask (not recommended, too dark)
 //  0.50 = recommended default
 //  1.00 = no shadow mask
-#define INPUT_MASK 0.65
+#define INPUT_MASK 0.45
 
 float FromSrgb1(float c) {
   return (c <= 0.04045) ? c * (1.0 / 12.92) :

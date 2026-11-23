@@ -55,6 +55,6 @@ palette = 13=#f36525
 palette = 14=#a4dde6
 palette = 15=#ffffff
 
-custom-shader = ~/.config/ghostty/shaders/space.glsl
-custom-shader = ~/.config/ghostty/shaders/crt.glsl
-custom-shader-animation = true
+# custom-shader = ~/.config/ghostty/shaders/space.glsl
+# custom-shader = ~/.config/ghostty/shaders/crt.glsl
+# custom-shader-animation = true
