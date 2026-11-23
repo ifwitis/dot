@@ -136,7 +136,17 @@ map('n', '<leader>bp', '<cmd>bprevious<CR>', { desc = "Previous buffer" })
 map('n', '<leader>bd', '<cmd>bdelete!<CR>', { desc = "Close buffer" })
 for i = 1, 9 do
     map("n", "<leader>b" .. i, function()
-        vim.cmd("buffer " .. i)
+        local buffers = require("bufferline").get_elements().elements
+
+        if buffers[i] then
+            vim.cmd("BufferLineGoToBuffer " .. i)
+        else
+            vim.notify(
+                "No buffer at position " .. i,
+                vim.log.levels.WARN,
+                { title = "Bufferline" }
+            )
+        end
     end, { desc = "Go to buffer " .. i })
 end
 
