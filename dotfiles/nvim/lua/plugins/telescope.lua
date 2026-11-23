@@ -14,9 +14,23 @@ return {
             telescope.setup({
                 pickers = {
                     find_files = {
-                        -- Force find_files to use ripgrep and exclude binaries
-                        find_command = { "rg", "--files", "--hidden", "--no-binary" },
-                    },
+                        hidden = true,
+                        follow = true,
+                        -- force telescope to use ripgrep
+                        find_command = {
+                            "rg",
+                            "--files",
+                            "--hidden",
+                            "--follow",
+                            "--glob", "!.git",
+                            "--glob", "!Library",
+                            "--glob", "!.cache",
+                            "--glob", "!.local",
+                            "--glob", "!.npm",
+                            "--glob", "!.cargo",
+                            "--glob", "!node_modules",
+                        },
+                    }
                 },
                 extensions = {
                     ["ui-select"] = {

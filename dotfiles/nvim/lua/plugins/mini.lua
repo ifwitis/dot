@@ -50,7 +50,7 @@ return {
                 ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
             },
         },
-        -- Custom closeopen to ignore unclosed ' " ` in line 
+        -- Custom closeopen to ignore unclosed ' " ` in line
         config = function(_, opts)
             local MiniPairs = require("mini.pairs")
             MiniPairs.setup(opts)
@@ -64,12 +64,30 @@ return {
                     local line = vim.api.nvim_get_current_line()
                     local col = vim.api.nvim_win_get_cursor(0)[2]
                     local before_cursor = line:sub(1, col)
+                    local next_char = line:sub(col + 1, col + 1)
 
-                    -- Ignore escaped quotes (\", \', \`)
-                    local cleaned = before_cursor:gsub("\\" .. open_char, "")
-                    local _, count = cleaned:gsub(open_char, "")
+                    -- Skip existing closing quotes
+                    if next_char == open_char then
+                        return orig_closeopen(pair, neigh_pattern)
+                    end
 
-                    -- Odd count means an unclosed quote exists before cursor -> close it
+                    -- Count unescaped quotes before cursor
+                    local count = 0
+                    local escaped = false
+
+                    for i = 1, #before_cursor do
+                        local char = before_cursor:sub(i, i)
+                        if char == "\\" then
+                            escaped = not escaped
+                        else
+                            if char == open_char and not escaped then
+                                count = count + 1
+                            end
+                            escaped = false
+                        end
+                    end
+
+                    -- Close unclosed quotes without inserting another pair
                     if count % 2 == 1 then
                         return open_char
                     end
