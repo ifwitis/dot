@@ -15,24 +15,6 @@ else
     compinit -C   # use cached dump, skip security scan
 fi
 
-# Bootstrap zsh config fragments from ~/.zshrc.other/
-if [ -d ~/.zshrc.other ]; then
-    for config_file in ~/.zshrc.other/.zshrc.*(.N); do
-        # echo "Setting up $config_file..."
-        source "$config_file"
-    done
-fi
-
-# p10k theme
-source "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme"
-
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Initialize the base system PATH
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/libexec"
 
@@ -55,6 +37,19 @@ unity() {                                   # Unity CLI
 
 # Tmux
 bindkey -r "^[/"    # Unbind /
+
+# Vim mode in terminal
+bindkey -v 
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^U' backward-kill-line
+bindkey -M viins '^[^?' backward-kill-word
+bindkey -M viins '^[^H' backward-kill-word
+
+# Zoxide
+eval "$(zoxide init zsh)"
+alias cd='z'
 
 # Lazy Load for NVM (Node Version Manager) initialization
 export NVM_DIR="$HOME/.nvm"
@@ -89,17 +84,23 @@ if [ -n "$NVIM" ]; then
   }
 fi
 
-# Vim mode in terminal
-bindkey -v 
-bindkey -M viins '^?' backward-delete-char
-bindkey -M viins '^H' backward-delete-char
-bindkey -M viins '^W' backward-kill-word
-bindkey -M viins '^U' backward-kill-line
-bindkey -M viins '^[^?' backward-kill-word
-bindkey -M viins '^[^H' backward-kill-word
+# Bootstrap zsh config fragments from ~/.zshrc.other/
+if [ -d ~/.zshrc.other ]; then
+    for config_file in ~/.zshrc.other/.zshrc.*(.N); do
+        # echo "Setting up $config_file..."
+        source "$config_file"
+    done
+fi
 
-eval "$(zoxide init zsh)"
-alias cd='z'
+# p10k theme
+source "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme"
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 # Startup time calculation
 typeset -F END_TIME=$EPOCHREALTIME
