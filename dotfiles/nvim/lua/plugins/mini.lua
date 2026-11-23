@@ -3,20 +3,21 @@ return {
     {
         "nvim-mini/mini.move",
         version = "*",
-        opts = {},
-        -- Module mappings. Use `''` (empty string) to disable one.
-        mappings = {
-            -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
-            left = '<M-Left>',
-            right = '<M-Right>',
-            down = '<M-Down>',
-            up = '<M-Up>',
+        opts = {
+            -- Module mappings. Use `''` (empty string) to disable one.
+            mappings = {
+                -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
+                -- left = '<M-Left>',
+                -- right = '<M-Right>',
+                -- down = '<M-Down>',
+                -- up = '<M-Up>',
 
-            -- Move current line in Normal mode
-            line_left = '<M-h>',
-            line_right = '<M-l>',
-            line_down = '<M-j>',
-            line_up = '<M-k>',
+                -- Move current line in Normal mode
+                -- line_left = '<M-h>',
+                -- line_right = '<M-l>',
+                -- line_down = '<M-j>',
+                -- line_up = '<M-k>',
+            },
         },
 
         -- Options which control moving behavior
