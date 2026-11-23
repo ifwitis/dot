@@ -47,10 +47,6 @@ bindkey -M viins '^U' backward-kill-line
 bindkey -M viins '^[^?' backward-kill-word
 bindkey -M viins '^[^H' backward-kill-word
 
-# Zoxide
-eval "$(zoxide init zsh)"
-alias cd='z'
-
 # Lazy Load for NVM (Node Version Manager) initialization
 export NVM_DIR="$HOME/.nvm"
 nvm() {
@@ -101,6 +97,42 @@ source "$(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme"
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+# ====================================
+# ========= Random Keybinds ==========
+# ====================================
+
+# Toggle minimalist "No UI" mode with F12
+toggle_hud() {
+  if [[ -z "$HUD_HIDDEN" ]]; then
+    export HUD_HIDDEN=1
+    export OLD_PS1="$PS1"
+    PS1=""
+    tput civis       # Hide blinking cursor
+    stty -echo       # Hide typed characters
+    clear
+  else
+    unset HUD_HIDDEN
+    PS1="$OLD_PS1"
+    tput cnorm       # Restore cursor
+    stty echo        # Restore typed characters
+    clear
+  fi
+  zle reset-prompt
+}
+zle -N toggle_hud
+bindkey '^[[24~' toggle_hud  # F12 key
+
+# ===== Command Alternatives ======
+# Zoxide
+eval "$(zoxide init zsh)"
+alias cd='z'
+# Bat 
+alias cat='bat'
+
+# ====================================
+# ====================================
+# ====================================
 
 # Startup time calculation
 typeset -F END_TIME=$EPOCHREALTIME
