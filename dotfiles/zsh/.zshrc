@@ -78,6 +78,17 @@ if [ -n "$TMUX" ]; then
   export HISTFILE="$HOME/.tmux_history/history_s_${CURRENT_SESSION}"
 fi
 
+# Prevent recursive neovim sessions
+if [ -n "$NVIM" ]; then
+  nvim() {
+    if [ $# -eq 0 ]; then
+      echo "Already inside Neovim (use :e or open a file directly)"
+      return 1
+    fi
+    command nvim --server "$NVIM" --remote "$@"
+  }
+fi
+
 # Vim mode in terminal
 bindkey -v 
 bindkey -M viins '^?' backward-delete-char

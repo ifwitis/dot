@@ -25,7 +25,16 @@ return {
                     { section = "header" },
                     { section = "keys", gap = 1, padding = 1, pane = 1 },
                     { section = "recent_files", icon = " ", title = "Recent Files", padding = 1, limit = 5 },
-                },            
+                },
+            },
+            terminal = {
+                win = {
+                    position = "bottom",
+                    height = 0.25,
+                    keys = {
+                        term_normal = false,
+                    }
+                },
             },
         })
     end,

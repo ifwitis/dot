@@ -45,6 +45,38 @@ end
 -- =========================== GENERAL KEYMAPS ===========================
 -- =======================================================================
 
+-- Reload configs
+map("n", "<leader>rl", function()
+    local plugins = require("lazy.core.config").plugins
+    local loaded = {}
+    for name, plugin in pairs(plugins) do
+        if plugin._.loaded then
+            table.insert(loaded, name)
+        end
+    end
+
+    table.sort(loaded)
+    _G.complete_lazy_plugins = function(arglead)
+        return vim.tbl_filter(function(name)
+            return vim.startswith(name, arglead)
+        end, loaded)
+    end
+
+    local name = vim.fn.input({
+        prompt = "Reload plugin: ",
+        completion = "customlist,v:lua.complete_lazy_plugins",
+    })
+
+    if name ~= "" and plugins[name] then
+        vim.cmd("Lazy reload " .. vim.fn.fnameescape(name))
+    end
+end, { desc = "Reload Lazy plugin" })
+
+map("n", "<leader>rr", function()
+    vim.cmd("source %")
+    vim.notify("Reloaded " .. vim.fn.expand("%:t"), vim.log.levels.INFO)
+end, { desc = "Reload current config file" })
+
 -- Toggle indent size
 map("n", "<leader>ti", function()
     local width = vim.bo.shiftwidth == 2 and 4 or 2
@@ -384,6 +416,11 @@ map("n", "<C-y>", "<C-r>", { desc = "Redo" })        -- CTRL + Y
 
 
 ------------------------------------------------------
+------------------- Terminal Mode --------------------
+------------------------------------------------------
+map('t', '<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+
+------------------------------------------------------
 --------------- Commenting Shortcuts -----------------
 ------------------------------------------------------
 -- <C-_>  = TMUX binding for Ctrl + /
@@ -583,5 +620,10 @@ map('n', 'Esc', function()
 end, { desc = "Dismiss all notifications" })
 
 -- ======================================================================
--- Multicursor
+-- Snacks
+-- ======================================================================
+map({ 'n', 't' }, '<C-`>', function() Snacks.terminal() end, { desc = "Toggle terminal" })
+
+-- ======================================================================
+-- Multicursor (TBA)
 -- =======================================================================y=
