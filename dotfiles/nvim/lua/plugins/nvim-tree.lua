@@ -4,9 +4,11 @@ return {
     dependencies = {
         "nvim-tree/nvim-web-devicons",
     },
-    config = function() 
+    config = function()
         vim.cmd([[hi NvimTreeNormal guibg=NONE ctermbg=NONE]])
         require("nvim-tree").setup({
+            sync_root_with_cwd = true,
+            respect_buf_cwd = true,
             filters = {
                 dotfiles = false, -- Show hidden files (dotfiles)
             },
@@ -18,5 +20,5 @@ return {
                 update_root = false,
             },
         })
-    end 
+    end
 }

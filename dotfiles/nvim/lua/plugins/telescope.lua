@@ -4,16 +4,14 @@ return {
     },
     {
         "nvim-telescope/telescope.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" }
+        },
         branch = "master",
         config = function()
-            require("telescope").setup({
-                defaults = {
-                    -- Sorts results by most recently modified when fuzzy scores tie
-                    tiebreak = function(current_entry, existing_entry, prompt)
-                        return current_entry.stat.mtime < existing_entry.stat.mtime
-                    end,
-                },
+            local telescope = require("telescope")
+            telescope.setup({
                 pickers = {
                     find_files = {
                         -- Force find_files to use ripgrep and exclude binaries
@@ -26,8 +24,8 @@ return {
                     },
                 },
             })
-
-            require("telescope").load_extension("ui-select")
+            telescope.load_extension("ui-select")
+            telescope.load_extension("fzf")
         end,
     },
 }

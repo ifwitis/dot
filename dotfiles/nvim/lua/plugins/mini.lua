@@ -49,7 +49,35 @@ return {
                 ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
                 ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\][%s,;)]', register = { cr = false } },
             },
-        }
+        },
+        -- Custom closeopen to ignore unclosed ' " ` in line 
+        config = function(_, opts)
+            local MiniPairs = require("mini.pairs")
+            MiniPairs.setup(opts)
+
+            local orig_closeopen = MiniPairs.closeopen
+
+            MiniPairs.closeopen = function(pair, neigh_pattern)
+                local open_char = pair:sub(1, 1)
+
+                if open_char == '"' or open_char == "'" or open_char == "`" then
+                    local line = vim.api.nvim_get_current_line()
+                    local col = vim.api.nvim_win_get_cursor(0)[2]
+                    local before_cursor = line:sub(1, col)
+
+                    -- Ignore escaped quotes (\", \', \`)
+                    local cleaned = before_cursor:gsub("\\" .. open_char, "")
+                    local _, count = cleaned:gsub(open_char, "")
+
+                    -- Odd count means an unclosed quote exists before cursor -> close it
+                    if count % 2 == 1 then
+                        return open_char
+                    end
+                end
+
+                return orig_closeopen(pair, neigh_pattern)
+            end
+        end,
     },
     { "windwp/nvim-ts-autotag",     opts = {} },
     { "nvim-mini/mini.indentscope", version = "*", opts = {} },

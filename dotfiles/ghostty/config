@@ -3,6 +3,9 @@
 
 keybind = global:alt+shift+t=toggle_quick_terminal
 
+# Automatically open tmux
+command = /opt/homebrew/bin/tmux new-session -A -s main
+
 # Send escape sequences for Option as Meta
 macos-option-as-alt = true
 keybind = alt+left=text:\x1b[1;3D

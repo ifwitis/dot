@@ -87,6 +87,9 @@ bindkey -M viins '^U' backward-kill-line
 bindkey -M viins '^[^?' backward-kill-word
 bindkey -M viins '^[^H' backward-kill-word
 
+eval "$(zoxide init zsh)"
+alias cd='z'
+
 # Startup time calculation
 typeset -F END_TIME=$EPOCHREALTIME
 integer TOTAL_MS=$(( (END_TIME - START_TIME) * 1000 ))

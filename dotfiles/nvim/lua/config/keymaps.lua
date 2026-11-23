@@ -542,9 +542,13 @@ map('n', '<leader>pc', "<cmd>LivePreview close<CR>", { desc = 'End LivePreview' 
 -- ======================================================================
 
 -- Defaults
-map('n', '<leader><leader><leader>', function() require('telescope.builtin').find_files() end,
-    { desc = 'Telescope find files' })
-map('n', '<leader>fg', function() require('telescope.builtin').live_grep() end, { desc = 'Telescope live grep' })
+map('n', '<leader>ff', function()
+    require('telescope.builtin').find_files()
+end, { desc = 'Telescope find files' })
+
+map('n', '<leader>fg', function()
+    require('telescope.builtin').live_grep()
+end, { desc = 'Telescope live grep' })
 
 
 -- ======================================================================
