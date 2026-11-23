@@ -17,18 +17,35 @@ float hash(vec2 p) {
 
 float starCell(vec2 cellID, vec2 cellUV, float layer, float t) {
     vec2 seed = cellID + vec2(layer * 17.3, layer * 5.7);
-    vec2 pos = vec2(0.2 + hash(seed) * 0.6, 0.2 + hash(seed + 0.5) * 0.6);
 
-    float dist = length(cellUV - pos);
-    float size = STAR_SIZE * (0.4 + hash(seed + 2.0) * 0.6);
+    float h1 = hash(seed);
+    float h2 = hash(seed + 0.5);
+    vec2 pos = vec2(0.2 + h1 * 0.6, 0.2 + h2 * 0.6);
 
-    float twinkleSpeed = 0.3 + hash(seed + 5.0) * 0.5;
-    float twinklePhase = hash(seed + 6.0) * 6.28318;
+    vec2 delta = cellUV - pos;
+    float dist2 = dot(delta, delta);
+
+    float h3 = hash(seed + 2.0);
+    float size = STAR_SIZE * (0.4 + h3 * 0.6);
+
+    if (dist2 > size * size * 0.25)
+        return 0.0;
+
+    float h4 = hash(seed + 3.0);
+    float h5 = hash(seed + 5.0);
+    float h6 = hash(seed + 6.0);
+
+    float twinkleSpeed = 0.3 + h5 * 0.5;
+    float twinklePhase = h6 * 6.28318;
     float twinkle = 0.75 + 0.25 * sin(t * twinkleSpeed + twinklePhase);
 
-    float alpha = (0.5 + hash(seed + 3.0) * 0.5) * BRIGHTNESS * twinkle;
+    float alpha = (0.5 + h4 * 0.5) * BRIGHTNESS * twinkle;
 
-    return alpha * (1.0 - smoothstep(size * 0.1, size * 0.5, dist));
+    return alpha * (1.0 - smoothstep(
+        size * size * 0.01,
+        size * size * 0.25,
+        dist2
+    ));
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -41,12 +58,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float t = iTime;
     float brightness = 0.0;
 
+    float edgeFade = 1.0 - smoothstep(
+        0.09, 0.64, dot(centeredUV, centeredUV)
+    );
+
     for (int i = 0; i < LAYERS; i++) {
         float fi = float(i);
 
         // each layer zooms at a different depth — parallax
         float depth = 0.4 + fi * 0.5;
-        float zoom = 1.0 + mod(t * FLY_SPEED * depth, 1.0);
+        float zoom = 1.0 + fract(t * FLY_SPEED * depth);
 
         // expand UV outward from center over time
         vec2 zoomedUV = centeredUV / zoom;
@@ -57,9 +78,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec2 cellUV = fract(gridUV);
 
         // fade out stars as they fly past the edges
-        float edgeFade = 1.0 - smoothstep(0.3, 0.8, length(centeredUV));
-
-        brightness += starCell(cellID, cellUV, fi, t) * (1.0 - fi * 0.2) * edgeFade;
+        brightness += starCell(cellID, cellUV, fi, t)
+                    * (1.0 - fi * 0.2) * edgeFade;
     }
 
     vec4 term = texture(iChannel0, uv);

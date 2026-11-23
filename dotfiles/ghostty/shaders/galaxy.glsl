@@ -1,4 +1,6 @@
-#define STAR_BRIGHTNESS 0.9
+// Deep space galaxy, created with ChatGPT
+
+#define STAR_BRIGHTNESS 1.4
 #define STAR_DENSITY 0.85
 #define FORWARD_SPEED 0.04
 #define STAR_SIZE 1.5
@@ -10,7 +12,7 @@
 
 #define NEBULA_STRENGTH 0.48
 
-#define BLACK_HOLE_STRENGTH 0.48
+#define BLACK_HOLE_STRENGTH 1.4
 #define BLACK_HOLE_INTERVAL 100.0
 #define BLACK_HOLE_MIN_SIZE 0.6
 #define BLACK_HOLE_MAX_SIZE 13.4
@@ -50,9 +52,11 @@ float cloud(vec2 p) {
 
 // Pixel-sized stars with soft glow
 float starShape(vec2 q, float size, float flare) {
-    float d = length(q);
-    float core = 1.0 - smoothstep(size * 0.35, size, d);
-    float halo = 0.22 * exp(-d * d / (size * size * 6.0));
+    float d2 = dot(q, q);
+    float s2 = size * size;
+
+    float core = 1.0 - smoothstep(s2 * 0.1225, s2, d2);
+    float halo = 0.22 * exp(-d2 / (s2 * 6.0));
     float cross = 0.0;
 
     if (flare > 0.92) {
@@ -85,46 +89,39 @@ vec3 forwardStars(vec2 p, float t, float height) {
         float scale = 32.0;
         vec2 shift = vec2(seed, seed * 0.73);
         vec2 grid = p * z * scale + shift;
-        vec2 base = floor(grid);
+        vec2 cell = floor(grid);
 
         // Check nearby cells for visible stars
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                vec2 cell = base + vec2(float(x), float(y));
-                float chance = hash21(cell + seed);
+        if (hash21(cell + seed) > 0.28 * STAR_DENSITY)
+            continue;
 
-                if (chance > 0.28 * STAR_DENSITY) continue;
+        vec2 offset = mix(
+            vec2(0.15), vec2(0.85),
+            hash22(cell + seed * 3.1)
+        );
 
-                vec2 offset = mix(
-                    vec2(0.15), vec2(0.85),
-                    hash22(cell + seed * 3.1)
-                );
+        // Screen-space distance in pixels
+        vec2 q = (fract(grid) - offset) * height / (scale * z);
+        float size = STAR_SIZE * mix(0.65, 2.5, 1.0 - z);
 
-                vec2 center = (cell + offset - shift) / (scale * z);
+        if (dot(q, q) > size * size * 81.0)
+            continue;
 
-                // Screen-space distance in pixels
-                vec2 q = (p - center) * height;
-                float size = STAR_SIZE * mix(0.65, 2.5, 1.0 - z);
+        float gold = step(0.73, hash21(cell + seed * 5.9));
+        float flare = hash21(cell + seed * 11.9);
+        float phase = hash21(cell + seed * 3.17) * 2.0 * PI;
+        float twinkle = 0.7 + 0.3 * sin(t * 1.6 + phase);
 
-                if (length(q) > size * 9.0) continue;
+        vec3 color = mix(
+            vec3(0.78, 0.87, 1.0),
+            vec3(1.0, 0.72, 0.32),
+            gold
+        );
 
-                float gold = step(0.73, hash21(cell + seed * 5.9));
-                float flare = hash21(cell + seed * 11.9);
-                float phase = hash21(cell + seed * 3.17) * 2.0 * PI;
-                float twinkle = 0.7 + 0.3 * sin(t * 1.6 + phase);
+        float brightness = mix(0.35, 1.3, 1.0 - z);
 
-                vec3 color = mix(
-                    vec3(0.78, 0.87, 1.0),
-                    vec3(1.0, 0.72, 0.32),
-                    gold
-                );
-
-                float brightness = mix(0.35, 1.3, 1.0 - z);
-
-                result += color * starShape(q, size, flare)
-                        * brightness * twinkle * fade;
-            }
-        }
+        result += color * starShape(q, size, flare)
+                * brightness * twinkle * fade;
     }
 
     return result * STAR_BRIGHTNESS;
@@ -135,12 +132,16 @@ vec3 distantStars(vec2 p, float t, float height) {
     vec2 grid = p * 95.0 + 21.3;
     vec2 cell = floor(grid);
     vec2 f = fract(grid);
-    float chance = hash21(cell + 14.7);
 
-    if (chance > 0.16 * STAR_DENSITY) return vec3(0.0);
+    if (hash21(cell + 14.7) > 0.16 * STAR_DENSITY)
+        return vec3(0.0);
 
     vec2 offset = mix(vec2(0.15), vec2(0.85), hash22(cell + 8.1));
     vec2 q = (f - offset) * height / 95.0;
+
+    if (dot(q, q) > 100.0)
+        return vec3(0.0);
+
     float phase = hash21(cell + 5.3) * 2.0 * PI;
     float twinkle = 0.35 + 0.65 * (0.5 + 0.5 * sin(t * 1.3 + phase));
     float gold = step(0.78, hash21(cell + 19.1));
@@ -159,54 +160,61 @@ vec3 distantStars(vec2 p, float t, float height) {
 
 // Bright clusters emerge occasionally
 vec3 stellarClusters(vec2 p, float t, float height) {
-vec3 result = vec3(0.0);
-    float current = floor(t / CLUSTER_INTERVAL);
-    float phase = fract(t / CLUSTER_INTERVAL);
+    float id = floor(t / CLUSTER_INTERVAL);
+    float age = fract(t / CLUSTER_INTERVAL);
 
-    for (int k = 0; k < 2; k++) {
-        float id = current - float(k);
-        float age = phase + float(k);
+    float fade = smoothstep(0.02, 0.22, age)
+               * (1.0 - smoothstep(0.53, 0.95, age));
 
-        float fade = smoothstep(0.02, 0.22, age)
-                   * (1.0 - smoothstep(0.53, 0.95, age));
+    if (fade < 0.001)
+        return vec3(0.0);
 
-        if (fade < 0.001) continue;
+    vec2 center = vec2(
+        mix(-0.65, 0.65, hash21(vec2(id, 2.4))),
+        mix(-0.32, 0.32, hash21(vec2(id, 7.9)))
+    );
 
-        vec2 center = vec2(
-            mix(-0.65, 0.65, hash21(vec2(id, 2.4))),
-            mix(-0.32, 0.32, hash21(vec2(id, 7.9)))
+    center += vec2(age * 0.008, 0.0);
+
+    vec2 d = p - center;
+    float d2 = dot(d, d);
+
+    if (d2 > CLUSTER_RADIUS * CLUSTER_RADIUS * 2.56)
+        return vec3(0.0);
+
+    float angle = atan(d.y, d.x);
+    float distance = sqrt(d2);
+
+    // Irregular cloud boundary
+    float shape = 0.65 * sin(angle * 3.0 + id * 2.7)
+                + 0.25 * sin(angle * 5.0 - id * 1.9)
+                + 0.10 * sin(angle * 9.0 + id * 4.3);
+
+    float radius = CLUSTER_RADIUS * (
+        1.0 + CLUSTER_IRREGULARITY * shape
+    );
+
+    float envelope = 1.0 - smoothstep(
+        radius * 0.55, radius * 1.15, distance
+    );
+
+    if (envelope <= 0.001)
+        return vec3(0.0);
+
+    vec3 result = vec3(0.0);
+    vec2 grid = (p + vec2(id * 3.71, id * 5.19)) * 105.0;
+    vec2 cell = floor(grid);
+    vec2 f = fract(grid);
+
+    if (hash21(cell + id * 5.1) < 0.45) {
+        vec2 offset = mix(
+            vec2(0.15), vec2(0.85),
+            hash22(cell + id * 2.3)
         );
 
-        center += vec2(age * 0.008, 0.0);
+        vec2 q = (f - offset) * height / 105.0;
 
-        vec2 d = p - center;
-        float angle = atan(d.y, d.x);
-        float distance = length(d);
-
-        // Irregular cloud boundary
-        float shape = 0.65 * sin(angle * 3.0 + id * 2.7)
-                    + 0.25 * sin(angle * 5.0 - id * 1.9)
-                    + 0.10 * sin(angle * 9.0 + id * 4.3);
-
-        float radius = CLUSTER_RADIUS * (
-            1.0 + CLUSTER_IRREGULARITY * shape
-        );
-
-        float envelope = 1.0 - smoothstep(
-            radius * 0.55, radius * 1.15, distance
-        );
-
-        vec2 grid = (p + vec2(id * 3.71, id * 5.19)) * 105.0;
-        vec2 cell = floor(grid);
-        vec2 f = fract(grid);
-
-        if (hash21(cell + id * 5.1) < 0.45) {
-            vec2 offset = mix(
-                vec2(0.15), vec2(0.85),
-                hash22(cell + id * 2.3)
-            );
-
-            vec2 q = (f - offset) * height / 105.0;
+        if (dot(q, q) < 100.0) {
             float gold = step(0.65, hash21(cell + 19.8));
 
             vec3 color = mix(
@@ -223,11 +231,11 @@ vec3 result = vec3(0.0);
                     * envelope * fade * twinkle
                     * CLUSTER_BRIGHTNESS;
         }
-
-        // Faint irregular cloud glow
-        result += vec3(0.045, 0.055, 0.10)
-                * envelope * fade * CLUSTER_BRIGHTNESS;
     }
+
+    // Faint irregular cloud glow
+    result += vec3(0.045, 0.055, 0.10)
+            * envelope * fade * CLUSTER_BRIGHTNESS;
 
     return result;
 }
@@ -238,20 +246,27 @@ vec3 nebulae(vec2 p, float t) {
     vec2 n2 = (p - vec2(0.57, -0.24)) * 4.7;
     vec2 n3 = (p - vec2(0.15, 0.49)) * 5.5;
 
-    float mist1 = pow(
-        smoothstep(0.43, 0.79, cloud(n1 + vec2(t * 0.004, 0.0))),
-        2.0
-    ) * exp(-dot(n1, n1) * 0.43);
+    float mist1 = 0.0;
+    float mist2 = 0.0;
+    float mist3 = 0.0;
 
-    float mist2 = pow(
-        smoothstep(0.43, 0.79, cloud(n2 - vec2(0.0, t * 0.003))),
-        2.0
-    ) * exp(-dot(n2, n2) * 0.37);
+    if (dot(n1, n1) < 24.0) {
+        float n = cloud(n1 + vec2(t * 0.004, 0.0));
+        float m = smoothstep(0.43, 0.79, n);
+        mist1 = m * m * exp(-dot(n1, n1) * 0.43);
+    }
 
-    float mist3 = pow(
-        smoothstep(0.48, 0.83, cloud(n3)),
-        2.0
-    ) * exp(-dot(n3, n3) * 0.46);
+    if (dot(n2, n2) < 24.0) {
+        float n = cloud(n2 - vec2(0.0, t * 0.003));
+        float m = smoothstep(0.43, 0.79, n);
+        mist2 = m * m * exp(-dot(n2, n2) * 0.37);
+    }
+
+    if (dot(n3, n3) < 24.0) {
+        float n = cloud(n3);
+        float m = smoothstep(0.48, 0.83, n);
+        mist3 = m * m * exp(-dot(n3, n3) * 0.46);
+    }
 
     float breath = 0.85 + 0.15 * sin(t * 0.13);
 
@@ -272,14 +287,14 @@ float blackHolePresence(float t) {
     );
 }
 
- vec2 blackHoleCenter(float t) {
-     float id = floor((t - 18.0) / BLACK_HOLE_INTERVAL + 0.5);
+vec2 blackHoleCenter(float t) {
+    float id = floor((t - 18.0) / BLACK_HOLE_INTERVAL + 0.5);
 
-     return vec2(
-         mix(-0.6, 0.6, hash21(vec2(id, 12.7))),
-         mix(-0.3, 0.3, hash21(vec2(id, 37.1)))
-     );
- }
+    return vec2(
+        mix(-0.6, 0.6, hash21(vec2(id, 12.7))),
+        mix(-0.3, 0.3, hash21(vec2(id, 37.1)))
+    );
+}
 
 float blackHoleSize(float t) {
     float id = floor((t - 18.0) / BLACK_HOLE_INTERVAL + 0.5);
@@ -292,18 +307,24 @@ float blackHoleSize(float t) {
     );
 }
 
+float blackHoleShadow(vec2 d) {
+    float d2 = dot(d, d);
 
-float blackHoleShadow(vec2 p, float t) {
-    vec2 d = (p - blackHoleCenter(t)) / blackHoleSize(t);
-    return 1.0 - smoothstep(0.039, 0.046, length(d));
+    if (d2 >= 0.046 * 0.046)
+        return 0.0;
+
+    return 1.0 - smoothstep(0.039, 0.046, sqrt(d2));
 }
 
 // Blackhole with dim accretion disk and lensed light
-vec3 blackHole(vec2 p, float t) {
-    vec2 d = (p - blackHoleCenter(t)) / blackHoleSize(t);
-    float r = length(d);
+vec3 blackHole(vec2 d, float t) {
+    float d2 = dot(d, d);
+
+    if (d2 > 0.12)
+        return vec3(0.0);
+
+    float r = sqrt(d2);
     float angle = atan(d.y, d.x);
-    float presence = blackHolePresence(t);
 
     // Inclined accretion disk
     vec2 disk = vec2(d.x, d.y * 3.0);
@@ -356,9 +377,9 @@ vec3 blackHole(vec2 p, float t) {
     vec3 light = gas + lens + bentLight + ambient;
 
     // Dark event horizon
-    light *= 1.0 - blackHoleShadow(p, t);
+    light *= 1.0 - blackHoleShadow(d);
 
-    return light * presence * flicker;
+    return light * flicker;
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -384,10 +405,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     space += forwardStars(p, t, iResolution.y);
     space += stellarClusters(p, t, iResolution.y);
 
-    float shadow = blackHoleShadow(p, t);
+    vec2 d = (p - blackHoleCenter(t)) / blackHoleSize(t);
     float presence = blackHolePresence(t);
+    float shadow = blackHoleShadow(d);
+
     space *= 1.0 - shadow * presence;
-    space += blackHole(p, t);
+    space += blackHole(d, t) * presence;
 
     // Preserve terminal text
     vec4 terminal = texture(iChannel0, uv);

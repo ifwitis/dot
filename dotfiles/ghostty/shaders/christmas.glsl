@@ -1,3 +1,4 @@
+
 // Original animated Christmas terminal art for Ghostty, created with ChatGPT
 // Procedural character atlas, no extra textures / buffers / raymarching.
 // This is a full-screen background; terminal glyphs are composited back on top.
@@ -50,8 +51,11 @@ float rowBits(int g,int r) {
 }
 
 float glyph(vec2 local,int g) {
+    if(g==0) return 0.0;
+
     vec2 q=floor(vec2(local.x*7.0-1.0, local.y*9.0-1.0));
     if(q.x<0.0 || q.y<0.0 || q.x>=5.0 || q.y>=7.0) return 0.0;
+
     return bit(rowBits(g,int(q.y)),4.0-q.x);
 }
 
@@ -69,11 +73,12 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord) {
     vec2 cp = (xy-0.5*iResolution.xy)/vec2(CELL_HEIGHT*0.64,CELL_HEIGHT);
     vec2 cell = floor(cp+0.5);
     vec2 local = fract(cp+0.5);
+
     float x=cell.x;
     float y=cell.y; // Positive Y points UP in the artwork
     float t=iTime*LIGHT_SPEED;
-    float r=hash21(cell+vec2(17.0,93.0));
     float w=iResolution.x/iResolution.y;
+
     int g=0;
     vec3 ink=vec3(0.75,0.86,0.97);
     float bloom=0.0;
@@ -81,30 +86,41 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord) {
     // Winter midnight background + tiny halo behind the tree.
     float v=xy.y/iResolution.y;
     vec3 scene=mix(vec3(0.013,0.021,0.060),vec3(0.026,0.072,0.118),1.0-v);
+
     float aura=exp(-pow((uv.x-0.5)*2.6,2.0)-pow((v-0.47)*2.2,2.0));
-    scene += vec3(0.015,0.036,0.044)*aura;
+    scene+=vec3(0.015,0.036,0.044)*aura;
+
     // Moon in the far-right upper corner, behind the art.
     vec2 moon=(uv-vec2(0.83,0.20))*vec2(w,1.0);
     scene+=vec3(0.054,0.088,0.135)*exp(-dot(moon,moon)*390.0);
 
     // Two moving grids of lightweight character snow: no per-particle loops.
-    for(int l=0;l<2;l++) {
-        float z=float(l);
-        vec2 drift=cp+vec2(t*(0.28+z*0.21),-iTime*(0.58+z*0.46));
-        vec2 si=floor(drift+0.5);
-        float h=hash21(si+z*71.63);
-        if(h>0.958+z*0.015) {
-            vec2 sl=fract(drift+0.5);
-            int sg=h>0.992?3:(h>0.981?2:1);
-            float a=glyph(sl,sg)*(0.28+0.28*h)*SNOW_AMOUNT;
-            scene+=a*vec3(0.18,0.30,0.42);
+    if(SNOW_AMOUNT>0.0) {
+        for(int l=0;l<2;l++) {
+            float z=float(l);
+            vec2 drift=cp+vec2(t*(0.28+z*0.21),-iTime*(0.58+z*0.46));
+            vec2 si=floor(drift+0.5);
+            float h=hash21(si+z*71.63);
+
+            if(h>0.958+z*0.015) {
+                vec2 sl=fract(drift+0.5);
+                int sg=h>0.992?3:(h>0.981?2:1);
+
+                float a=glyph(sl,sg)*(0.28+0.28*h)*SNOW_AMOUNT;
+                scene+=a*vec3(0.18,0.30,0.42);
+            }
         }
     }
 
     // Decorative night stars outside the Christmas tree.
-    if(abs(x)>17.0 && y>-13.0 && hash21(cell+vec2(111.0,77.0))>0.985) {
-        g=r>0.7?3:(r>0.4?2:1);
-        ink=vec3(0.28,0.47,0.64)*(0.75+0.25*sin(iTime*0.7+r*9.0));
+    if(abs(x)>17.0 && y>-13.0) {
+        float s=hash21(cell+vec2(111.0,77.0));
+
+        if(s>0.985) {
+            float r=hash21(cell+vec2(17.0,93.0));
+            g=r>0.7?3:(r>0.4?2:1);
+            ink=vec3(0.28,0.47,0.64)*(0.75+0.25*sin(iTime*0.7+r*9.0));
+        }
     }
 
     // Wider, tiered boughs with independently shaded evergreen ASCII symbols.
@@ -115,40 +131,57 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord) {
         float within=mod(row,7.5);
         float width=floor(1.0+tier*2.0+within*(0.91+0.17*tier));
         float edge=abs(x);
+
         if(edge<=width) {
             float n=hash21(cell+vec2(27.0,13.0));
+
             // Pine-needle texture, multiple leafy greens, subtle vertical shading.
             g=n<0.14?3:(n<0.36?12:(n<0.67?13:(n<0.88?7:16)));
             ink=mix(vec3(0.037,0.31,0.17),vec3(0.23,0.75,0.37),n);
             ink*=0.82+0.18*(1.0-edge/max(width,1.0));
+
             if(edge==width) {
                 g=x<0.0?4:5;
                 ink=vec3(0.22,0.65,0.35);
             }
-            if(within>=6.5 && edge<width-1.0) {g=16; ink=vec3(0.16,0.52,0.28);}
+
+            if(within>=6.5 && edge<width-1.0) {
+                g=16;
+                ink=vec3(0.16,0.52,0.28);
+            }
 
             // S-shaped gold garlands cascade across the fir branches.
-            float cord = sin((x/(max(width,2.0)))*3.14159*1.35+float(tier)*1.8)*1.8;
-            float garlandRow = 5.0 - 7.5*tier + cord;
-            if(abs(y-garlandRow)<0.52 && edge<width-1.0) {
-                g= (mod(x+floor(tier),4.0)==0.0)?3:16;
-                ink=vec3(0.94,0.57,0.13)*(0.86+0.14*sin(t*0.7+x));
-                bloom=0.10;
+            if(edge<width-1.0) {
+                float cord=sin((x/max(width,2.0))*3.14159*1.35+float(tier)*1.8)*1.8;
+                float garlandRow=5.0-7.5*tier+cord;
+
+                if(abs(y-garlandRow)<0.52) {
+                    g=(mod(x+floor(tier),4.0)==0.0)?3:16;
+                    ink=vec3(0.94,0.57,0.13)*(0.86+0.14*sin(t*0.7+x));
+                    bloom=0.10;
+                }
             }
 
             // Colorful, synchronized-but-not-identical lights / glossy ornaments.
-            float b=hash21(cell+vec2(85.19,22.37));
-            if(b>0.805 && edge<width-0.6) {
-                float sel=hash21(cell+vec2(47.3,168.5));
-                ink=bulbColor(sel);
-                g=b>0.945?17:(b>0.87?6:3);
-                float flash=0.62+0.38*sin(2.7*t + x*0.85 + y*1.9 + b*13.0);
-                flash=0.56+0.44*flash;
-                ink*=flash;
-                bloom=0.18+0.19*flash;
+            if(edge<width-0.6) {
+                float b=hash21(cell+vec2(85.19,22.37));
+
+                if(b>0.805) {
+                    float sel=hash21(cell+vec2(47.3,168.5));
+                    ink=bulbColor(sel);
+                    g=b>0.945?17:(b>0.87?6:3);
+
+                    float flash=0.62+0.38*sin(2.7*t+x*0.85+y*1.9+b*13.0);
+                    flash=0.56+0.44*flash;
+
+                    ink*=flash;
+                    bloom=0.18+0.19*flash;
+                }
+                // Needle highlights shimmer much less frequently than ornaments.
+                else if(n>0.93) {
+                    ink*=0.90+0.10*sin(t*0.6+n*50.0);
+                }
             }
-            // Needle highlights shimmer much less frequently than ornaments.
-            else if(n>0.93) ink*=0.90+0.10*sin(t*0.6+n*50.0);
         }
     }
 
@@ -160,9 +193,11 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord) {
         ink=vec3(1.0,0.78,0.25)*pul;
         bloom=0.35+0.20*pul;
     }
+
     // Actual continuous glow around the topper; only a few pixels of work.
     vec2 starDist=(cp-vec2(0.0,15.5))*vec2(0.85,1.0);
-    scene+=vec3(0.10,0.065,0.008)*exp(-dot(starDist,starDist)*0.09)*(0.75+0.25*sin(t*2.1));
+    scene+=vec3(0.10,0.065,0.008)*exp(-dot(starDist,starDist)*0.09)
+          *(0.75+0.25*sin(t*2.1));
 
     // Wooden trunk, with a softly illuminated base.
     if(y>=-12.0 && y<=-10.0 && abs(x)<=1.0) {
@@ -171,34 +206,47 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord) {
     }
 
     // Wrapped ASCII presents at the foot: red, blue and purple with gold ribbons.
-    if(y>=-17.0 && y<=-13.0) {
-        for(int i=0;i<3;i++) {
-            float cx=(float(i)-1.0)*8.0;
-            float dx=x-cx;
-            if(abs(dx)<=3.0) {
-                if(y==-13.0) g=(dx==0.0)?3:9;
-                else if(y==-17.0) g=15;
-                else if(abs(dx)==3.0) g=8;
-                else if(dx==0.0) g=8;
-                else if(y==-15.0) g=15;
-                else g=hash21(cell+float(i)*23.0)>0.6?17:7;
-                ink=i==0?vec3(1.0,0.21,0.28):(i==1?vec3(0.13,0.65,1.0):vec3(0.80,0.32,0.93));
-                if(dx==0.0 || y==-15.0) ink=vec3(1.0,0.75,0.25);
-                bloom=(dx==0.0 && y==-13.0)?0.15:0.0;
-            }
+    if(y>=-17.0 && y<=-13.0 && abs(x)<=11.0) {
+        float i=floor((x+4.0)/8.0)+1.0;
+        float cx=(i-1.0)*8.0;
+        float dx=x-cx;
+
+        if(i>=0.0 && i<=2.0 && abs(dx)<=3.0) {
+            if(y==-13.0) g=dx==0.0?3:9;
+            else if(y==-17.0) g=15;
+            else if(abs(dx)==3.0) g=8;
+            else if(dx==0.0) g=8;
+            else if(y==-15.0) g=15;
+            else g=hash21(cell+i*23.0)>0.6?17:7;
+
+            ink=i==0.0?vec3(1.0,0.21,0.28):
+                (i==1.0?vec3(0.13,0.65,1.0):vec3(0.80,0.32,0.93));
+
+            if(dx==0.0 || y==-15.0)
+                ink=vec3(1.0,0.75,0.25);
+
+            bloom=(dx==0.0 && y==-13.0)?0.15:0.0;
         }
     }
 
     // Decorative snow-bank glyphs below the presents.
-    if(y==-18.0 && abs(x)<24.0 && r>0.4 && g==0) {
-        g=r>0.82?3:1;
-        ink=vec3(0.43,0.68,0.83);
+    if(y==-18.0 && abs(x)<24.0 && g==0) {
+        float r=hash21(cell+vec2(17.0,93.0));
+
+        if(r>0.4) {
+            g=r>0.82?3:1;
+            ink=vec3(0.43,0.68,0.83);
+        }
     }
 
     // Shine a very small halo inside each lit character cell.
-    scene+=ink*bloom*exp(-length(local-vec2(0.5))*4.0);
-    float drawn=glyph(local,g);
-    scene=mix(scene,ink,drawn*0.94);
+    if(bloom>0.0)
+        scene+=ink*bloom*exp(-length(local-vec2(0.5))*4.0);
+
+    if(g!=0) {
+        float drawn=glyph(local,g);
+        scene=mix(scene,ink,drawn*0.94);
+    }
 
     // Preserve terminal foreground + cursor from unmodified iChannel0.
     vec4 terminal=texture(iChannel0,uv);
