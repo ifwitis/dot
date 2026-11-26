@@ -38,8 +38,10 @@ unity() {                                   # Unity CLI
 # Tmux
 bindkey -r "^[/"    # Unbind /
 
-# Vim mode in terminal
+# Vim mode + keybinds in terminal
 bindkey -v 
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 bindkey -M viins '^W' backward-kill-word
