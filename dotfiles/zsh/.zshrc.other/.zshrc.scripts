@@ -25,18 +25,39 @@ toggle_hud() {
 zle -N toggle_hud
 bindkey '^[[24~' toggle_hud  # Bind F12 Key
 
-# Enable or disable Ghostty shaders by index
+# Enable, disable, or list Ghostty shaders by index
 gtty-shade() {
   local config="$HOME/.config/ghostty/config"
   local pattern='^[[:space:]]*#?[[:space:]]*custom-shader[[:space:]]*='
   local count=$(grep -Ec "$pattern" "$config")
   local n tmp
   if [[ $# -eq 0 ]]; then
-    echo "Usage: gtty-shade <±1-$count> [...]" >&2
+    echo "Usage: gtty-shade <±1-$count> [...]"
+    echo "       gtty-shade list"
+    echo ""
+    echo "  +n / n   Enable shader n"
+    echo "  -n       Disable shader n"
+    echo "  list     List all shaders and their status"
     return 1
   fi
+  if [[ "$1" == "list" && $# -eq 1 ]]; then
+    awk -v pattern="$pattern" '
+      $0 ~ pattern {
+        n++
+        name = $0
+        sub(/^.*=/, "", name)
+        sub(/^[[:space:]]*/, "", name)
+        sub(/^.*\//, "", name)
+        if ($0 ~ /^[[:space:]]*#/)
+          printf "\033[31m[UNSET]\033[0m %2d: %s\n", n, name
+        else
+          printf "\033[32m[SET]\033[0m   %2d: %s\n", n, name
+      }
+    ' "$config"
+    return $?
+  fi
   for n in "$@"; do
-    if ! [[ "$n" =~ ^-?[1-9][0-9]*$ ]] || (( ${n#-} > count )); then
+    if ! [[ "$n" =~ ^[+-]?[1-9][0-9]*$ ]] || (( ${n#-} > count )); then
       echo "Invalid shader: $n (expected ±1-$count)" >&2
       return 1
     fi
