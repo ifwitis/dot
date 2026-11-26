@@ -1,0 +1,72 @@
+#!/usr/bin/env zsh
+
+###############################
+# Personal silly scripts file #
+###############################
+
+# Toggle no-UI mode with F12
+toggle_hud() {
+  if [[ -z "$HUD_HIDDEN" ]]; then
+    export HUD_HIDDEN=1
+    export OLD_PS1="$PS1"
+    PS1=""
+    tput civis       # Hide blinking cursor
+    stty -echo       # Hide typed characters
+    clear
+  else
+    unset HUD_HIDDEN
+    PS1="$OLD_PS1"
+    tput cnorm       # Restore cursor
+    stty echo        # Restore typed characters
+    clear
+  fi
+  zle reset-prompt
+}
+zle -N toggle_hud
+bindkey '^[[24~' toggle_hud  # Bind F12 Key
+
+# Enable or disable Ghostty shaders by index
+gtty-shade() {
+  local config="$HOME/.config/ghostty/config"
+  local pattern='^[[:space:]]*#?[[:space:]]*custom-shader[[:space:]]*='
+  local count=$(grep -Ec "$pattern" "$config")
+  local n tmp
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: gtty-shade <±1-$count> [...]" >&2
+    return 1
+  fi
+  for n in "$@"; do
+    if ! [[ "$n" =~ ^-?[1-9][0-9]*$ ]] || (( ${n#-} > count )); then
+      echo "Invalid shader: $n (expected ±1-$count)" >&2
+      return 1
+    fi
+  done
+  tmp=$(mktemp) || return 1
+  awk -v selected="$*" '
+    BEGIN {
+      count = split(selected, numbers, " ")
+      for (i = 1; i <= count; i++) {
+        num = numbers[i] + 0
+        changes[num < 0 ? -num : num] = (num > 0)
+      }
+    }
+    /^[[:space:]]*#?[[:space:]]*custom-shader[[:space:]]*=/ {
+      n++
+      if (n in changes) {
+        sub(/^[[:space:]]*#?[[:space:]]*/, "")
+        name = $0
+        sub(/^.*\//, "", name)
+        if (changes[n]) {
+          printf "\033[32m[SET]\033[0m   %d: %s\n", n, name > "/dev/stderr"
+        } else {
+          $0 = "# " $0
+          printf "\033[31m[UNSET]\033[0m %d: %s\n", n, name > "/dev/stderr"
+        }
+      }
+    }
+    { print }
+  ' "$config" > "$tmp" && cat "$tmp" > "$config"
+  local result=$?
+  rm -f "$tmp"
+  return $result
+}
