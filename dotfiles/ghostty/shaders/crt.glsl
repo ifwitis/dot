@@ -65,7 +65,7 @@
 #define SCALE 0.5
 
 // "Tube" warp
-#define CRTS_WARP 1
+#define CRTS_WARP 1.0
 
 // Darkness of vignette in corners after warping
 //  0.0 = completely black

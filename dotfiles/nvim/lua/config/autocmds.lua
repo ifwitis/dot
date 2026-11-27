@@ -65,7 +65,7 @@ autocmd({ "InsertEnter", "WinLeave" }, {
 -----------------------------------------------------------
 
 local lsp_on_attach_group = augroup("LspMappings", {})
-local on_attach = require("utils.lsp-keybinds").on_attach
+local on_attach = require("utils.lsp").on_attach
 autocmd("LspAttach", {
     group = lsp_on_attach_group,
     callback = on_attach,

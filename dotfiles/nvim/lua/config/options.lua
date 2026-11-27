@@ -46,8 +46,9 @@ o.guicursor = "n-v-c:block-Cursor,i-ci-ve:ver25-lCursor,r-cr:hor20,o:hor50"     
 -- Tabs, indent
 -----------------------------------------------------------
 o.expandtab = true        -- Use spaces instead of tabs
-o.shiftwidth = 4          -- Shift 4 spaces when tab
-o.tabstop = 4             -- 1 tab == 4 spaces
+o.shiftwidth = 2          -- Shift 2 spaces when tab
+o.tabstop = 2             -- Display tab characters as 2 spaces
+o.softtabstop = 2         -- Edit tab characters as 2 spaces
 o.smartindent = true      -- Autoindent new lines
 
 -----------------------------------------------------------
@@ -55,6 +56,7 @@ o.smartindent = true      -- Autoindent new lines
 -----------------------------------------------------------
 o.hidden = true           -- Enable background buffers
 o.history = 100           -- Remember N lines in history
+o.undofile = true         -- Store persistent undo file
 o.lazyredraw = false      -- Faster scrolling
 o.synmaxcol = 240         -- Max column for syntax highlight
 o.updatetime = 250        -- ms to wait for trigger an event
